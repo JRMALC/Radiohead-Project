@@ -1,0 +1,3124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Radiohead Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --off-black: #0f0f0f;
+    --dark: #151515;
+    --mid: #1e1e1e;
+    --surface: #242424;
+    --border: rgba(255,255,255,0.07);
+    --border-bright: rgba(255,255,255,0.18);
+    --text: #e8e8e8;
+    --text-dim: rgba(232,232,232,0.45);
+    --text-mid: rgba(232,232,232,0.7);
+    --accent: #c0392b;
+    --accent-dim: rgba(192,57,43,0.18);
+    --accent-glow: rgba(192,57,43,0.08);
+    --red: #e74c3c;
+    --red-dim: rgba(231,76,60,0.12);
+    --blue: #7eb8ff;
+    --blue-dim: rgba(126,184,255,0.12);
+    --star-on: #e05545;
+    --star-off: rgba(192,57,43,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--black);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* LANDING */
+  #landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  #landing::before {
+    content: 'OK COMPUTER';
+    position: absolute;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(6rem, 18vw, 18rem);
+    color: rgba(255,255,255,0.02);
+    letter-spacing: -0.04em;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .landing-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    max-width: 460px;
+    width: 100%;
+  }
+
+  .landing-logo-wrap {
+    text-align: center;
+  }
+
+  .landing-bear {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.2rem;
+    display: block;
+  }
+
+  .landing-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.2rem;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--text);
+  }
+
+  .landing-title span {
+    color: var(--accent);
+  }
+
+  .landing-sub {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 0.6rem;
+  }
+
+  .landing-card {
+    background: var(--dark);
+    border: 1px solid var(--border-bright);
+    border-radius: 2px;
+    padding: 2rem;
+    width: 100%;
+  }
+
+  .landing-card h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+
+  .landing-card p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--text-dim); }
+
+  .btn {
+    padding: 0.7rem 1.2rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 2px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+  .btn:hover { opacity: 0.88; }
+  .btn:active { transform: scale(0.97); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-mid);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--border-bright); color: var(--text); }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0.5rem 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* APP SHELL */
+  #app { display: none; min-height: 100vh; flex-direction: column; }
+
+  /* NAV */
+  nav {
+    background: var(--off-black);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .nav-logo .dot { color: var(--accent); }
+
+  .nav-tabs { display: flex; gap: 0.15rem; }
+  .nav-tab {
+    padding: 0.45rem 0.9rem;
+    border-radius: 2px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    color: var(--text-dim);
+    border: none;
+    background: none;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .nav-tab:hover { background: var(--mid); color: var(--text); }
+  .nav-tab.active { background: var(--accent-dim); color: var(--accent); }
+
+  .nav-user {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .user-badge {
+    width: 30px; height: 30px;
+    background: var(--accent);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    color: white;
+  }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+  }
+
+  /* DISCOGRAPHY PAGE */
+  .disc-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .disc-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+  }
+
+  .disc-header p {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-family: 'Syne Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .filter-chip {
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--text-dim);
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .filter-chip:hover { border-color: var(--border-bright); color: var(--text); }
+  .filter-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* SECTION (Album/EP/Single group) */
+  .release-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-label {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* RELEASE CARD */
+  .release-card {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .release-card:hover { border-color: var(--border-bright); }
+
+  .release-header {
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .release-header:hover { background: rgba(255,255,255,0.02); }
+
+  .release-cover {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 1px;
+    display: block;
+    background: var(--mid);
+  }
+
+  .release-cover-ph {
+    width: 100px;
+    height: 100px;
+    background: var(--mid);
+    border-radius: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--text-dim);
+  }
+
+  .release-info {}
+  .release-type {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.35rem;
+  }
+
+  .release-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+  }
+
+  .release-meta {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .release-score-wrap {
+    text-align: right;
+    min-width: 90px;
+  }
+
+  .release-score-big {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .release-score-big.unrated { font-size: 1rem; color: var(--text-dim); font-weight: 400; font-family: 'Syne Mono', monospace; }
+  .release-score-denom { font-size: 0.78rem; color: var(--text-dim); font-weight: 400; }
+  .release-song-count {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-top: 0.2rem;
+    letter-spacing: 0.06em;
+  }
+
+  .chevron {
+    margin-left: 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    transition: transform 0.25s;
+  }
+  .release-card.open .chevron { transform: rotate(90deg); }
+
+  /* SONG LIST */
+  .song-list {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 0 1.25rem;
+  }
+  .release-card.open .song-list { display: block; }
+
+  .song-list-header {
+    display: grid;
+    grid-template-columns: 28px 1fr 180px 60px 36px;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .song-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 180px 60px 36px;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.1s;
+  }
+  .song-row:last-child { border-bottom: none; }
+  .song-row:hover { background: rgba(255,255,255,0.025); margin: 0 -1.25rem; padding-left: 1.25rem; padding-right: 1.25rem; }
+
+  .song-num {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-align: right;
+  }
+
+  .song-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .song-stars {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .star-btn {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s;
+    flex-shrink: 0;
+  }
+  .star-btn:hover { transform: scale(1.3); }
+  .star-btn svg { width: 14px; height: 14px; }
+  .star-btn.on svg .sf { fill: var(--star-on); }
+  .star-btn.on svg .ss { stroke: var(--star-on); fill: none; }
+  .star-btn:not(.on) svg .sf { fill: none; }
+  .star-btn:not(.on) svg .ss { stroke: var(--star-off); fill: none; stroke-width: 1.5; }
+
+  .song-score-display {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-align: center;
+    width: 40px;
+  }
+  .song-score-display.empty { color: var(--text-dim); }
+
+  .song-list-footer {
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    margin-top: 0.5rem;
+  }
+
+  .footer-avg {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .footer-avg span { color: var(--accent); font-size: 1.1rem; }
+
+  .footer-rated {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* Progress bar in footer */
+  .song-progress {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+    flex: 1;
+    margin: 0 1rem;
+  }
+  .song-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.4s ease;
+  }
+
+  /* STATS PAGE */
+  .stats-page { }
+
+  .stats-section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .stats-user-chip {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-family: 'Syne Mono', monospace;
+    letter-spacing: 0.08em;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-tile {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-label {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .stats-card {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ── VISUALIZATIONS ── */
+  .viz-card {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .viz-card.personal-card { border-color: rgba(192,57,43,0.18); }
+  .viz-card.group-card    { border-color: rgba(126,184,255,0.15); }
+  .viz-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .viz-card h3 .h3-dot { width:6px;height:6px;border-radius:50%;flex-shrink:0; }
+  .viz-card.personal-card h3 .h3-dot { background: var(--accent); }
+  .viz-card.group-card    h3 .h3-dot { background: var(--blue); }
+  .viz-sub {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Heat map */
+  .heatmap-wrap { overflow-x: auto; padding-bottom: 0.5rem; }
+  .heatmap-table { border-collapse: collapse; min-width: 100%; }
+  .heatmap-table td, .heatmap-table th {
+    padding: 0;
+    font-family: 'Syne Mono', monospace;
+  }
+  .hm-album-label {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    text-align: right;
+    padding-right: 8px;
+    white-space: nowrap;
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
+  .hm-cell {
+    width: 26px;
+    height: 26px;
+    border-radius: 2px;
+    margin: 1px;
+    display: inline-block;
+    cursor: default;
+    transition: transform 0.1s;
+    position: relative;
+  }
+  .hm-cell:hover { transform: scale(1.3); z-index: 10; }
+  .hm-track-label {
+    font-size: 0.55rem;
+    color: var(--text-dim);
+    text-align: center;
+    width: 28px;
+    display: inline-block;
+    padding-top: 3px;
+  }
+
+  /* Scatter plot */
+  .scatter-wrap { position: relative; }
+  .scatter-svg { overflow: visible; }
+
+  /* Radar chart */
+  .radar-wrap { display: flex; justify-content: center; }
+
+  /* Violin / box */
+  .violin-wrap { overflow-x: auto; }
+  .violin-svg { overflow: visible; }
+
+  /* Tooltip */
+  .viz-tooltip {
+    position: fixed;
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    border-radius: 2px;
+    padding: 0.4rem 0.7rem;
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text);
+    pointer-events: none;
+    z-index: 9990;
+    display: none;
+    max-width: 200px;
+    line-height: 1.5;
+  }
+  .stats-toggle-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 3px;
+    margin-bottom: 2rem;
+    width: 100%;
+    overflow-x: auto;
+  }
+  .stats-toggle-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 0.55rem 0.75rem;
+    border: none;
+    border-radius: 1px;
+    background: transparent;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+    text-align: center;
+  }
+  .stats-toggle-btn:hover { color: var(--text); }
+  .stats-toggle-btn.active-personal {
+    background: var(--accent);
+    color: white;
+  }
+  .stats-toggle-btn.active-group {
+    background: var(--blue-dim);
+    color: var(--blue);
+    border: 1px solid rgba(126,184,255,0.3);
+  }
+  .stats-toggle-btn.active-user {
+    background: rgba(126,184,255,0.12);
+    color: var(--blue);
+  }
+
+  /* ── STATS SECTION HEADERS ── */
+  .stats-section-band {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 2rem 0 1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 2px;
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .stats-section-band.personal {
+    background: rgba(192,57,43,0.1);
+    border-left: 3px solid var(--accent);
+    color: var(--accent);
+  }
+  .stats-section-band.group {
+    background: rgba(126,184,255,0.08);
+    border-left: 3px solid var(--blue);
+    color: var(--blue);
+  }
+  .stats-section-band::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.2;
+  }
+
+  /* ── STATS CARD VARIANTS ── */
+  .stats-card.personal-card {
+    border-color: rgba(192,57,43,0.18);
+  }
+  .stats-card.group-card {
+    border-color: rgba(126,184,255,0.15);
+  }
+  .stats-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .stats-card h3 .h3-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .stats-card.personal-card h3 .h3-dot { background: var(--accent); }
+  .stats-card.group-card h3 .h3-dot { background: var(--blue); }
+
+  .rank-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .rank-row:last-child { border-bottom: none; }
+
+  .rank-num {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    width: 20px;
+    text-align: right;
+  }
+
+  .rank-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+
+  .rank-sub {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-top: 0.1rem;
+  }
+
+  .rank-score {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+
+  /* Distribution bars */
+  .dist-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .dist-bar-label {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    width: 16px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .dist-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--mid);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .dist-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.6s ease;
+  }
+  .dist-bar-count {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    width: 28px;
+  }
+
+  /* Friend comparison */
+  .friend-card {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .friend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .friend-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .agreement-badge {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+  }
+  .agreement-badge.high { background: rgba(200,255,0,0.15); color: var(--accent); }
+  .agreement-badge.mid { background: rgba(126,184,255,0.12); color: var(--blue); }
+  .agreement-badge.low { background: rgba(255,59,59,0.12); color: var(--red); }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--black);
+    padding: 0.65rem 1.5rem;
+    border-radius: 2px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    opacity: 0;
+    transition: opacity 0.25s;
+    z-index: 9998;
+    pointer-events: none;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  #toast.show { opacity: 1; }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  .share-url {
+    background: var(--mid);
+    border: 1px dashed var(--border-bright);
+    border-radius: 2px;
+    padding: 0.7rem 1rem;
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-mid);
+    word-break: break-all;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .share-url:hover { background: var(--surface); }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-dim);
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 640px) {
+    .release-header { grid-template-columns: 72px 1fr auto; }
+    .release-cover, .release-cover-ph { width: 72px; height: 72px; }
+    .song-list-header, .song-row { grid-template-columns: 22px 1fr 110px 36px 28px; }
+    .nav-tab { padding: 0.4rem 0.6rem; font-size: 0.68rem; }
+    .nav-logo { font-size: 0.85rem; }
+  }
+
+  @media (max-width: 480px) {
+    .song-list-header, .song-row { grid-template-columns: 22px 1fr 90px 30px 24px; }
+    .star-btn { width: 12px; height: 12px; }
+    .star-btn svg { width: 11px; height: 11px; }
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .release-card { animation: fadeIn 0.3s ease both; }
+  .release-card:nth-child(2) { animation-delay: 0.04s; }
+  .release-card:nth-child(3) { animation-delay: 0.08s; }
+  .release-card:nth-child(4) { animation-delay: 0.12s; }
+  .release-card:nth-child(5) { animation-delay: 0.16s; }
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="landing">
+  <div class="landing-inner">
+    <div class="landing-logo-wrap">
+      <img class="landing-bear" src="data:image/jpeg;base64,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" alt="Radiohead Modified Bear" style="mix-blend-mode:multiply;filter:sepia(1) saturate(4) hue-rotate(320deg) brightness(0.7);"/>
+      <div class="landing-title">The <span>Radiohead</span><br>Project</div>
+      <div class="landing-sub">Rate every song · Track everything</div>
+    </div>
+
+    <div class="landing-card">
+      <h2>Start rating</h2>
+      <p>Enter your name. Your ratings are saved locally and synced across the group.</p>
+      <div class="input-row">
+        <input type="text" id="nameInput" placeholder="Your name" maxlength="30" />
+        <button class="btn" onclick="startSession()">Begin →</button>
+      </div>
+      <div class="divider">or return</div>
+      <div class="input-row" style="margin-bottom:0">
+        <input type="text" id="returnInput" placeholder="Your name or share URL" />
+        <button class="btn btn-ghost" onclick="returnSession()">Go →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav>
+    <div class="nav-logo">
+      <img src="data:image/jpeg;base64,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" alt="Radiohead bear" width="22" height="22" style="mix-blend-mode:multiply;filter:sepia(1) saturate(4) hue-rotate(320deg) brightness(0.7);object-fit:contain;"/>
+      <span>RH<span class="dot">●</span>PROJECT</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('discography', this)">Discography</button>
+      <button class="nav-tab" onclick="showPage('stats', this)">Stats</button>
+    </div>
+    <div class="nav-user">
+      <span id="navUserName"></span>
+      <div class="user-badge" id="userBadge"></div>
+    </div>
+  </nav>
+
+  <!-- DISCOGRAPHY PAGE -->
+  <div class="page active" id="page-discography">
+    <div class="page-inner">
+      <div class="disc-header">
+        <h1>Radiohead — Complete Discography</h1>
+        <p id="discSubline">Rate every song. Albums scored as weighted average.</p>
+      </div>
+      <div class="filter-row">
+        <button class="filter-chip active" onclick="setFilter('all', this)">All</button>
+        <button class="filter-chip" onclick="setFilter('album', this)">Albums</button>
+        <button class="filter-chip" onclick="setFilter('ep', this)">EPs</button>
+        <button class="filter-chip" onclick="setFilter('single', this)">Singles</button>
+        <button class="filter-chip" onclick="setFilter('live', this)">Live</button>
+        <button class="filter-chip" onclick="setFilter('unrated', this)">Unrated</button>
+      </div>
+      <div id="discContent"></div>
+    </div>
+  </div>
+
+  <!-- STATS PAGE -->
+  <div class="page" id="page-stats">
+    <div class="page-inner">
+      <div id="statsToggleBar"></div>
+      <div id="statsContent"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="viz-tooltip" id="vizTooltip"></div>
+
+<script>
+// =====================
+// RADIOHEAD DISCOGRAPHY DATA
+// Sourced from Apple Music / Wikipedia
+// Cover art from Apple Music CDN (publicly accessible)
+// =====================
+
+const RELEASES = [
+  // ─── STUDIO ALBUMS ───
+  {
+    id: 'pablo',
+    title: 'Pablo Honey',
+    year: 1993,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/241499cc-ab40-40c6-8847-fdecf293857a/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/pablo-honey/1097862062',
+    songs: [
+      'You', 'Creep', 'How Do You?', 'Stop Whispering', 'Thinking About You',
+      'Anyone Can Play Guitar', 'Ripcord', 'Vegetable', 'Prove Yourself',
+      'I Can\'t', 'Lurgee', 'Blow Out'
+    ]
+  },
+  {
+    id: 'bends',
+    title: 'The Bends',
+    year: 1995,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/b8048f24-c026-3398-b23a-b5e50716cbc7/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/the-bends/1097861919',
+    songs: [
+      'Planet Telex', 'The Bends', 'High and Dry', 'Fake Plastic Trees',
+      'Bones', '(Nice Dream)', 'Just', 'My Iron Lung', 'Bullet Proof... I Wish I Was',
+      'Black Star', 'Sulk', 'Street Spirit (Fade Out)'
+    ]
+  },
+  {
+    id: 'okc',
+    title: 'OK Computer',
+    year: 1997,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/b1392450-e666-3926-a536-22c65f834433/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/ok-computer/1097861248',
+    songs: [
+      'Airbag', 'Paranoid Android', 'Subterranean Homesick Alien', 'Exit Music (For a Film)',
+      'Let Down', 'Karma Police', 'Fitter Happier', 'Electioneering',
+      'Climbing Up the Walls', 'No Surprises', 'Lucky', 'The Tourist'
+    ]
+  },
+  {
+    id: 'kid_a',
+    title: 'Kid A',
+    year: 2000,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/e75c0549-ad55-39e3-8025-c72c5d4a3c5d/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/kid-a/1097862062',
+    songs: [
+      'Everything in Its Right Place', 'Kid A', 'The National Anthem',
+      'How to Disappear Completely', 'Treefingers', 'Optimistic',
+      'In Limbo', 'Idioteque', 'Morning Bell', 'Motion Picture Soundtrack'
+    ]
+  },
+  {
+    id: 'amnesiac',
+    title: 'Amnesiac',
+    year: 2001,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/bca9280e-28b4-327f-8fe0-fd918579e486/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/amnesiac/1097863062',
+    songs: [
+      'Packt Like Sardines in a Crushd Tin Box', 'Pyramid Song', 'Pulk/Pull Revolving Doors',
+      'You and Whose Army?', 'I Might Be Wrong', 'Knives Out', 'Morning Bell/Amnesiac',
+      'Dollars and Cents', 'Hunting Bears', 'Like Spinning Plates', 'Life in a Glasshouse'
+    ]
+  },
+  {
+    id: 'httt',
+    title: 'Hail to the Thief',
+    year: 2003,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/5c14fd50-a2f1-3672-9537-b0dad91bea2f/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/hail-to-the-thief/1097864062',
+    songs: [
+      '2 + 2 = 5', 'Sit Down. Stand Up.', 'Sail to the Moon', 'Backdrifts',
+      'Go to Sleep', 'Where I End and You Begin', 'We Suck Young Blood',
+      'The Gloaming', 'There There', 'I Will', 'A Punchup at a Wedding',
+      'Myxomatosis', 'Scatterbrain', 'A Wolf at the Door'
+    ]
+  },
+  {
+    id: 'in_rainbows',
+    title: 'In Rainbows',
+    year: 2007,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/6e335887-60ba-38f0-95af-fae7774336bf/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/in-rainbows/1097861766',
+    songs: [
+      '15 Step', 'Bodysnatchers', 'Nude', 'Weird Fishes/Arpeggi', 'All I Need',
+      'Faust Arp', 'Reckoner', 'House of Cards', 'Jigsaw Falling into Place', 'Videotape'
+    ]
+  },
+  {
+    id: 'king',
+    title: 'The King of Limbs',
+    year: 2011,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/899b6d09-807e-4c18-a6d4-3642e00d6a3d/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/the-king-of-limbs/419254833',
+    songs: [
+      'Bloom', 'Morning Mr Magpie', 'Little by Little', 'Feral',
+      'Lotus Flower', 'Codex', 'Give Up the Ghost', 'Separator'
+    ]
+  },
+  {
+    id: 'moon',
+    title: 'A Moon Shaped Pool',
+    year: 2016,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/bbce0087-d386-4246-a51d-dbcdfdbe8fb2/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/a-moon-shaped-pool/1097864750',
+    songs: [
+      'Burn the Witch', 'Daydreaming', 'Decks Dark', 'Desert Island Disk',
+      'Ful Stop', 'Glass Eyes', 'Identikit', 'The Numbers',
+      'Present Tense', 'Tinker Tailor Soldier Sailor Rich Man Poor Man Beggar Man Thief',
+      'True Love Waits'
+    ]
+  },
+
+  // ─── EPs ───
+  {
+    id: 'drill_ep',
+    title: 'Drill',
+    year: 1992,
+    type: 'ep',
+    cover: 'https://coverartarchive.org/release-group/b2246643-115e-3b53-9a96-6d2df930f970/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=Drill+EP+Radiohead',
+    songs: [
+      'Prove Yourself', 'Stupid Car', 'You', 'Thinking About You'
+    ]
+  },
+  {
+    id: 'creep_ep',
+    title: 'Creep (EP)',
+    year: 1992,
+    type: 'ep',
+    cover: 'https://coverartarchive.org/release-group/c5bc370b-95c2-3634-bb89-51bb2dce97c3/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=Creep+EP+Radiohead',
+    songs: [
+      'Creep', 'Lurgee', 'Inside My Head', 'Million Dollar Question'
+    ]
+  },
+  {
+    id: 'my_iron_lung',
+    title: 'My Iron Lung',
+    year: 1994,
+    type: 'ep',
+    cover: 'https://coverartarchive.org/release-group/99445a2b-578a-321e-851e-c6539bfbbd7f/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=My+Iron+Lung+EP+Radiohead',
+    songs: [
+      'My Iron Lung', 'The Trickster', 'Lewis (Mistreated)', 'Happy Song',
+      'Permanent Daylight', 'Lozenge of Love', 'You Never Wash Up After Yourself',
+      'Punchdrunk Lovesick Singalong'
+    ]
+  },
+  {
+    id: 'worrywort',
+    title: 'Com Lag (2plus2isfive)',
+    year: 2004,
+    type: 'ep',
+    cover: 'https://coverartarchive.org/release-group/62db99f0-2629-305c-8c2d-b860b5b99744/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=Com+Lag+Radiohead',
+    songs: [
+      '2 + 2 = 5 (Live)', 'Remyxomatosis (Cristales Remix)',
+      'Worrywort', 'Fog (Again) (Live)', 'I Will (Los Angeles Version)',
+      'I Am Citizen Insane', 'Paperbag Writer'
+    ]
+  },
+
+  // ─── NOTABLE SINGLES / B-SIDES ───
+  {
+    id: 'ok_nodisco',
+    title: 'OK Computer OKNOTOK 1997–2017',
+    year: 2017,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/b6dbb956-5ce5-45fd-9588-cf14c20c85fb/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/ok-computer-oknotok-1997-2017/1246095772',
+    songs: [
+      'Airbag', 'Paranoid Android', 'Subterranean Homesick Alien', 'Exit Music (For a Film)',
+      'Let Down', 'Karma Police', 'Fitter Happier', 'Electioneering',
+      'Climbing Up the Walls', 'No Surprises', 'Lucky', 'The Tourist',
+      'I Promise', 'Man of War', 'Lift'
+    ]
+  },
+  {
+    id: 'kid_a_mnesia',
+    title: 'KID A MNESIA',
+    year: 2021,
+    type: 'album',
+    cover: 'https://coverartarchive.org/release-group/6f25f9fb-e9e3-4c0d-8904-ecb8b46cd8aa/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/kid-a-mnesia/1596588748',
+    songs: [
+      'Everything in Its Right Place', 'Kid A', 'The National Anthem',
+      'How to Disappear Completely', 'Treefingers', 'Optimistic', 'In Limbo',
+      'Idioteque', 'Morning Bell', 'Motion Picture Soundtrack',
+      'Packt Like Sardines in a Crushd Tin Box', 'Pyramid Song', 'Pulk/Pull Revolving Doors',
+      'You and Whose Army?', 'I Might Be Wrong', 'Knives Out', 'Morning Bell/Amnesiac',
+      'Dollars and Cents', 'Hunting Bears', 'Like Spinning Plates', 'Life in a Glasshouse',
+      'If You Say the Word', 'Follow Me Around', 'Pulk/Pull (Revolving Doors) [Demo]',
+      'Untitled V1', 'Fog', 'Pyramid Strings', 'Alt. Fast Track', 'Kinetic'
+    ]
+  },
+
+  // ─── SINGLES (selected notable releases) ───
+  {
+    id: 'high_dry_single',
+    title: 'High and Dry / Planet Telex',
+    year: 1995,
+    type: 'single',
+    cover: 'https://coverartarchive.org/release-group/96838f33-94ec-3d55-9147-f158e2247bf3/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=High+and+Dry+Radiohead',
+    songs: ['High and Dry', 'Planet Telex', 'Maquiladora', 'Lewis (Mistreated)']
+  },
+  {
+    id: 'fake_plastic_single',
+    title: 'Fake Plastic Trees',
+    year: 1995,
+    type: 'single',
+    cover: 'https://coverartarchive.org/release-group/78690342-5a02-382c-9778-6b1c3dd741a2/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=Fake+Plastic+Trees+Radiohead',
+    songs: ['Fake Plastic Trees', 'India Rubber', 'How Can You Be Sure?']
+  },
+  {
+    id: 'karma_single',
+    title: 'Karma Police',
+    year: 1997,
+    type: 'single',
+    cover: 'https://coverartarchive.org/release-group/d8758f15-65c9-3f34-baf9-475b30755e2b/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=Karma+Police+Radiohead',
+    songs: ['Karma Police', 'Meeting in the Aisle', 'Lull']
+  },
+  {
+    id: 'no_surprises_single',
+    title: 'No Surprises',
+    year: 1998,
+    type: 'single',
+    cover: 'https://coverartarchive.org/release-group/d8758f15-65c9-3f34-baf9-475b30755e2b/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=No+Surprises+Radiohead',
+    songs: ['No Surprises', 'Palo Alto', 'How I Made My Millions']
+  },
+  {
+    id: 'burn_witch_single',
+    title: 'Burn the Witch',
+    year: 2016,
+    type: 'single',
+    cover: 'https://coverartarchive.org/release-group/bbce0087-d386-4246-a51d-dbcdfdbe8fb2/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=Burn+the+Witch+Radiohead',
+    songs: ['Burn the Witch', 'Ful Stop']
+  },
+  {
+    id: 'daydreaming_single',
+    title: 'Daydreaming',
+    year: 2016,
+    type: 'single',
+    cover: 'https://coverartarchive.org/release-group/bbce0087-d386-4246-a51d-dbcdfdbe8fb2/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/search?term=Daydreaming+Radiohead',
+    songs: ['Daydreaming']
+  },
+
+  // ─── LIVE ALBUMS ───
+  {
+    id: 'i_might_be_wrong_live',
+    title: 'I Might Be Wrong: Live Recordings',
+    year: 2001,
+    type: 'live',
+    cover: 'https://coverartarchive.org/release-group/a9e6d5de-f32c-3a6d-8c6f-9f55c5a78b11/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/i-might-be-wrong-live-recordings/1097863500',
+    songs: [
+      'The National Anthem (Live)',
+      'I Might Be Wrong (Live)',
+      'Morning Bell (Live)',
+      'Like Spinning Plates (Live)',
+      'Idioteque (Live)',
+      'Everything in Its Right Place (Live)',
+      'Dollars and Cents (Live)',
+      'True Love Waits (Live)'
+    ]
+  },
+  {
+    id: 'httt_live',
+    title: 'Hail to the Thief (Live Recordings 2003–2009)',
+    year: 2025,
+    type: 'live',
+    cover: 'https://coverartarchive.org/release-group/5c14fd50-a2f1-3672-9537-b0dad91bea2f/front-250',
+    appleMusicUrl: 'https://music.apple.com/us/album/hail-to-the-thief-live-recordings-2003-2009/1780000000',
+    songs: [
+      '2 + 2 = 5 (Live)',
+      'Sit Down. Stand Up. (Live)',
+      'Sail to the Moon (Live)',
+      'Go to Sleep (Live)',
+      'Where I End and You Begin (Live)',
+      'We Suck Young Blood (Live)',
+      'The Gloaming (Live)',
+      'There There (Live)',
+      'I Will (Live)',
+      'Myxomatosis (Live)',
+      'Scatterbrain (Live)',
+      'A Wolf at the Door (Live)'
+    ]
+  }
+];
+
+// =====================
+// STATE
+// =====================
+let currentUser = null;
+let allUsers = {};
+let currentFilter = 'all';
+let statsView = 'personal'; // 'personal' | 'group' | user key
+let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyU8ALqj5OBEBT0g67OsBPOmNp52Hc4VebgXFSo0wlGP6x9f7a6OUutFbFchxVVKsSDFg/exec';
+
+function lsGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+
+// =====================
+// USER MANAGEMENT
+// =====================
+function saveLocal() { lsSet('rh_users', JSON.stringify(allUsers)); }
+function loadLocal() {
+  const d = lsGet('rh_users');
+  allUsers = d ? JSON.parse(d) : {};
+}
+
+function getOrCreateUser(name) {
+  const key = name.toLowerCase().trim();
+  if (!allUsers[key]) {
+    allUsers[key] = { name: name.trim(), key, ratings: {}, joined: new Date().toISOString() };
+    saveLocal();
+  }
+  return allUsers[key];
+}
+
+// =====================
+// GOOGLE SHEETS SYNC (optional)
+// =====================
+async function sheetsRequest(payload) {
+  if (!SCRIPT_URL) return null;
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch(e) { return null; }
+}
+
+async function syncFromSheets() {
+  const data = await sheetsRequest({ action: 'getAll' });
+  if (!data || !data.users) return;
+  data.users.forEach(u => {
+    const name = (u.name || '').trim();
+    if (name.length < 2 || BLOCKED_NAMES.has(name.toLowerCase())) return;
+    const key = name.toLowerCase();
+    if (!allUsers[key]) {
+      allUsers[key] = { name: name, key, ratings: u.ratings || {}, joined: u.joined || new Date().toISOString() };
+    } else {
+      Object.assign(allUsers[key].ratings, u.ratings || {});
+    }
+  });
+  // Purge any ghost users (no ratings, not current user)
+  Object.keys(allUsers).forEach(key => {
+    const u = allUsers[key];
+    if (key === currentUser?.key) return;
+    if (!u.name || u.name.trim().length < 2 || Object.keys(u.ratings || {}).length === 0) {
+      delete allUsers[key];
+    }
+  });
+  cleanGhostUsers();
+  saveLocal();
+}
+
+async function pushRating(releaseId, songIdx, rating) {
+  if (!SCRIPT_URL) return;
+  sheetsRequest({ action: 'saveRating', name: currentUser.name, releaseId, songIdx, rating });
+}
+
+// =====================
+// SESSION
+// =====================
+async function startSession() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { showToast('Enter your name first'); return; }
+  loadLocal();
+  currentUser = getOrCreateUser(name);
+  saveLocal();
+  enterApp();
+  if (SCRIPT_URL) {
+    showToast('Syncing…');
+    await syncFromSheets();
+    currentUser = allUsers[currentUser.key];
+    showToast('Synced ✓');
+    renderDiscography();
+  }
+}
+
+async function returnSession() {
+  const val = document.getElementById('returnInput').value.trim();
+  if (!val) { showToast('Enter name or URL'); return; }
+  let name = val;
+  if (val.includes('?user=')) name = decodeURIComponent(val.split('?user=')[1]);
+  loadLocal();
+  const key = name.toLowerCase().trim();
+  currentUser = allUsers[key] ? allUsers[key] : getOrCreateUser(name);
+  saveLocal();
+  enterApp();
+  if (SCRIPT_URL) {
+    showToast('Syncing…');
+    await syncFromSheets();
+    currentUser = allUsers[currentUser.key];
+    showToast('Synced ✓');
+    renderDiscography();
+  }
+}
+
+function enterApp() {
+  document.getElementById('landing').style.display = 'none';
+  const app = document.getElementById('app');
+  app.style.display = 'flex';
+  app.style.flexDirection = 'column';
+  document.getElementById('navUserName').textContent = currentUser.name;
+  document.getElementById('userBadge').textContent = currentUser.name[0].toUpperCase();
+  history.replaceState({}, '', '?user=' + encodeURIComponent(currentUser.name));
+  renderDiscography();
+}
+
+window.addEventListener('load', () => {
+  loadLocal();
+  cleanGhostUsers();
+  const params = new URLSearchParams(window.location.search);
+  const user = params.get('user');
+  if (user) {
+    document.getElementById('returnInput').value = user;
+    returnSession();
+  }
+});
+
+// =====================
+// RATING HELPERS
+// =====================
+function ratingKey(releaseId, songIdx) { return `${releaseId}::${songIdx}`; }
+
+function getRating(releaseId, songIdx) {
+  return currentUser.ratings[ratingKey(releaseId, songIdx)] || 0;
+}
+
+function setRating(releaseId, songIdx, val) {
+  currentUser.ratings[ratingKey(releaseId, songIdx)] = val;
+  saveLocal();
+  pushRating(releaseId, songIdx, val);
+}
+
+function getReleaseAvg(release) {
+  let total = 0, count = 0;
+  release.songs.forEach((_, i) => {
+    const r = getRating(release.id, i);
+    if (r > 0) { total += r; count++; }
+  });
+  return count > 0 ? total / count : null;
+}
+
+function getReleaseRatedCount(release) {
+  return release.songs.filter((_, i) => getRating(release.id, i) > 0).length;
+}
+
+function getTotalSongsRated() {
+  let count = 0;
+  RELEASES.forEach(rel => {
+    rel.songs.forEach((_, i) => { if (getRating(rel.id, i) > 0) count++; });
+  });
+  return count;
+}
+
+function getTotalSongs() {
+  return RELEASES.reduce((s, r) => s + r.songs.length, 0);
+}
+
+function getAllRatings() {
+  const arr = [];
+  RELEASES.forEach(rel => {
+    rel.songs.forEach((song, i) => {
+      const r = getRating(rel.id, i);
+      if (r > 0) arr.push({ release: rel, song, songIdx: i, rating: r });
+    });
+  });
+  return arr;
+}
+
+// =====================
+// FILTER
+// =====================
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderDiscography();
+}
+
+function filteredReleases() {
+  if (currentFilter === 'all') return RELEASES;
+  if (currentFilter === 'unrated') return RELEASES.filter(r => getReleaseRatedCount(r) < r.songs.length);
+  return RELEASES.filter(r => r.type === currentFilter);
+}
+// =====================
+// STAR SVG
+// =====================
+function starSVG() {
+  return `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <polygon class="ss sf" points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke-width="1.5"/>
+  </svg>`;
+}
+
+function renderStarRow(releaseId, songIdx, currentVal, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'star-btn' + (i <= currentVal ? ' on' : '');
+    btn.innerHTML = starSVG();
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const newVal = i;
+      setRating(releaseId, songIdx, newVal);
+      renderStarRow(releaseId, songIdx, newVal, containerId);
+      // Update the score display
+      const scoreEl = document.getElementById('score-' + containerId);
+      if (scoreEl) {
+        scoreEl.textContent = newVal;
+        scoreEl.className = 'song-score-display';
+      }
+      // Update release header score
+      updateReleaseScore(releaseId);
+    };
+    // Hover preview
+    btn.onmouseenter = () => {
+      container.querySelectorAll('.star-btn').forEach((s, idx) => {
+        s.classList.toggle('on', idx < i);
+      });
+    };
+    btn.onmouseleave = () => {
+      const cur = getRating(releaseId, songIdx);
+      container.querySelectorAll('.star-btn').forEach((s, idx) => {
+        s.classList.toggle('on', idx < cur);
+      });
+    };
+    container.appendChild(btn);
+  }
+}
+
+function updateReleaseScore(releaseId) {
+  const release = RELEASES.find(r => r.id === releaseId);
+  if (!release) return;
+  const avg = getReleaseAvg(release);
+  const ratedCount = getReleaseRatedCount(release);
+
+  const scoreEl = document.getElementById('rel-score-' + releaseId);
+  if (scoreEl) {
+    if (avg !== null) {
+      scoreEl.className = 'release-score-big';
+      scoreEl.innerHTML = avg.toFixed(1) + '<span class="release-score-denom">/10</span>';
+    } else {
+      scoreEl.className = 'release-score-big unrated';
+      scoreEl.textContent = '—';
+    }
+  }
+
+  const countEl = document.getElementById('rel-count-' + releaseId);
+  if (countEl) {
+    countEl.textContent = `${ratedCount} / ${release.songs.length} songs`;
+  }
+
+  // Update footer inside song list
+  const footerEl = document.getElementById('footer-' + releaseId);
+  if (footerEl) renderSongListFooter(releaseId, footerEl);
+}
+
+function renderSongListFooter(releaseId, container) {
+  const release = RELEASES.find(r => r.id === releaseId);
+  if (!release || !container) return;
+  const avg = getReleaseAvg(release);
+  const ratedCount = getReleaseRatedCount(release);
+  const pct = Math.round((ratedCount / release.songs.length) * 100);
+  container.innerHTML = `
+    <div class="footer-avg">${avg !== null ? `Avg: <span>${avg.toFixed(2)}</span>/10` : 'No ratings yet'}</div>
+    <div class="song-progress"><div class="song-progress-fill" style="width:${pct}%"></div></div>
+    <div class="footer-rated">${ratedCount}/${release.songs.length} rated</div>
+  `;
+}
+
+// =====================
+// RENDER DISCOGRAPHY
+// =====================
+function renderDiscography() {
+  const container = document.getElementById('discContent');
+  const releases = filteredReleases();
+
+  // Group by type
+  const albums = releases.filter(r => r.type === 'album');
+  const eps = releases.filter(r => r.type === 'ep');
+  const singles = releases.filter(r => r.type === 'single');
+  const live = releases.filter(r => r.type === 'live');
+
+  let html = '';
+
+  function renderGroup(label, list) {
+    if (!list.length) return '';
+    let out = `<div class="release-section"><div class="section-label">${label}</div>`;
+    list.forEach(rel => { out += renderReleaseCard(rel); });
+    out += '</div>';
+    return out;
+  }
+
+  html += renderGroup('Studio Albums & Compilations', albums);
+  html += renderGroup('EPs', eps);
+  html += renderGroup('Singles', singles);
+  html += renderGroup('Live Albums', live);
+
+  if (!releases.length) {
+    html = '<div class="empty-state">No releases match this filter.</div>';
+  }
+
+  container.innerHTML = html;
+
+  // Attach star rows for all visible songs in open cards
+  // (they're built dynamically when cards expand)
+  updateDiscSubline();
+}
+
+function renderReleaseCard(rel) {
+  const avg = getReleaseAvg(rel);
+  const ratedCount = getReleaseRatedCount(rel);
+  const typeLabel = rel.type === 'album' ? 'Studio Album' : rel.type === 'live' ? 'Live Album' : rel.type.toUpperCase();
+  const coverEl = rel.cover
+    ? `<img class="release-cover" src="${rel.cover}" alt="${rel.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+       <div class="release-cover-ph" style="display:none">🎵</div>`
+    : `<div class="release-cover-ph">🎵</div>`;
+
+  const scoreHtml = avg !== null
+    ? `<div class="release-score-big" id="rel-score-${rel.id}">${avg.toFixed(1)}<span class="release-score-denom">/10</span></div>`
+    : `<div class="release-score-big unrated" id="rel-score-${rel.id}">—</div>`;
+
+  const amBtn = rel.appleMusicUrl
+    ? `<a href="${rel.appleMusicUrl}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.35rem 0.8rem;background:#fc3c44;color:white;border-radius:2px;font-size:0.7rem;font-family:'Syne',sans-serif;font-weight:700;text-decoration:none;letter-spacing:0.04em;margin-top:0.4rem;">▶ Apple Music</a>`
+    : '';
+
+  const songListHtml = buildSongList(rel);
+
+  return `
+    <div class="release-card" id="card-${rel.id}">
+      <div class="release-header" onclick="toggleCard('${rel.id}')">
+        <div style="position:relative">${coverEl}</div>
+        <div class="release-info">
+          <div class="release-type">${typeLabel}</div>
+          <div class="release-title">${rel.title}</div>
+          <div class="release-meta">${rel.year} · ${rel.songs.length} tracks</div>
+          ${amBtn}
+        </div>
+        <div class="release-score-wrap">
+          ${scoreHtml}
+          <div class="release-song-count" id="rel-count-${rel.id}">${ratedCount} / ${rel.songs.length} songs</div>
+          <div style="text-align:right;margin-top:0.5rem"><span class="chevron">▶</span></div>
+        </div>
+      </div>
+      <div class="song-list" id="songs-${rel.id}">
+        ${songListHtml}
+        <div class="song-list-footer" id="footer-${rel.id}"></div>
+      </div>
+    </div>
+  `;
+}
+
+function buildSongList(rel) {
+  let html = `
+    <div class="song-list-header">
+      <div>#</div>
+      <div>Song</div>
+      <div>Your Rating</div>
+      <div style="text-align:center">Score</div>
+      <div style="text-align:center">Play</div>
+    </div>
+  `;
+  const rows = rel.songs.map((song, i) => {
+    const r = getRating(rel.id, i);
+    const starId = `stars-${rel.id}-${i}`;
+    const cleanSong = song.replace(/\s*\(Live\)\s*$/i, '').replace(/['"]/g, '');
+    const searchQ = encodeURIComponent(`${cleanSong} Radiohead`);
+    const amUrl = `https://music.apple.com/us/search?term=${searchQ}`;
+    return `
+      <div class="song-row">
+        <div class="song-num">${i + 1}</div>
+        <div class="song-name">${song}</div>
+        <div class="song-stars" id="${starId}"></div>
+        <div class="${r > 0 ? 'song-score-display' : 'song-score-display empty'}" id="score-${starId}">${r > 0 ? r : '—'}</div>
+        <div style="text-align:center">
+          <a href="${amUrl}" target="_blank" onclick="event.stopPropagation()" title="Open in Apple Music" style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#fc3c44;border-radius:50%;text-decoration:none;flex-shrink:0;transition:opacity 0.15s" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+  return html + rows;
+}
+
+function toggleCard(releaseId) {
+  const card = document.getElementById('card-' + releaseId);
+  const isOpen = card.classList.contains('open');
+
+  if (!isOpen) {
+    card.classList.add('open');
+    // Render star rows
+    const rel = RELEASES.find(r => r.id === releaseId);
+    if (rel) {
+      rel.songs.forEach((_, i) => {
+        const starId = `stars-${releaseId}-${i}`;
+        renderStarRow(releaseId, i, getRating(releaseId, i), starId);
+      });
+      const footerEl = document.getElementById('footer-' + releaseId);
+      if (footerEl) renderSongListFooter(releaseId, footerEl);
+    }
+  } else {
+    card.classList.remove('open');
+  }
+}
+
+function updateDiscSubline() {
+  const rated = getTotalSongsRated();
+  const total = getTotalSongs();
+  const pct = Math.round((rated / total) * 100);
+  document.getElementById('discSubline').textContent = `${rated} of ${total} songs rated across ${RELEASES.length} releases · ${pct}% complete`;
+}
+
+// =====================
+// PAGE NAVIGATION
+// =====================
+function showPage(name, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (tab) tab.classList.add('active');
+  if (name === 'stats') renderStats();
+}
+
+// =====================
+// STATS PAGE
+// =====================
+
+const BLOCKED_NAMES = new Set(['user', 'test', 'undefined', 'null', 'anonymous', 'guest', 'admin']);
+
+function cleanGhostUsers() {
+  let changed = false;
+  Object.keys(allUsers).forEach(key => {
+    const u = allUsers[key];
+    const name = (u.name || '').trim();
+    const hasName = name.length >= 2 && !BLOCKED_NAMES.has(name.toLowerCase());
+    const hasRatings = Object.keys(u.ratings || {}).length > 0;
+    if (!hasName || !hasRatings) {
+      delete allUsers[key];
+      changed = true;
+    }
+  });
+  if (changed) saveLocal();
+}
+
+function isValidUser(u) {
+  const name = (u.name || '').trim();
+  if (name.length < 2) return false;
+  if (BLOCKED_NAMES.has(name.toLowerCase())) return false;
+  return Object.keys(u.ratings || {}).length > 0;
+}
+
+function renderStatsToggle() {
+  cleanGhostUsers();
+  const bar = document.getElementById('statsToggleBar');
+  if (!bar) return;
+  const friends = Object.values(allUsers).filter(u => u.key !== currentUser.key && isValidUser(u));  bar.innerHTML = `
+    <div style="font-family:'Syne Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.6rem">Viewing stats for</div>
+    <div class="stats-toggle-bar">
+      <button class="stats-toggle-btn ${statsView === 'personal' ? 'active-personal' : ''}"
+        onclick="setStatsView('personal')">
+        ${currentUser.name} (you)
+      </button>
+      ${friends.map(f => `
+        <button class="stats-toggle-btn ${statsView === f.key ? 'active-user' : ''}"
+          onclick="setStatsView('${f.key}')">
+          ${f.name}
+        </button>
+      `).join('')}
+      <button class="stats-toggle-btn ${statsView === 'group' ? 'active-group' : ''}"
+        onclick="setStatsView('group')">
+        ◈ Group
+      </button>
+    </div>
+  `;
+}
+
+function setStatsView(view) {
+  statsView = view;
+  renderStats();
+}
+
+function renderStats() {
+  renderStatsToggle();
+  const container = document.getElementById('statsContent');
+  if (statsView === 'group') {
+    renderGroupStats(container);
+  } else {
+    const user = statsView === 'personal'
+      ? currentUser
+      : (allUsers[statsView] || currentUser);
+    renderUserStats(container, user, statsView === 'personal');
+  }
+}
+
+// ── helpers shared by both views ──
+function userAllRatings(user) {
+  const arr = [];
+  RELEASES.forEach(rel => {
+    rel.songs.forEach((song, i) => {
+      const r = user.ratings[ratingKey(rel.id, i)] || 0;
+      if (r > 0) arr.push({ release: rel, song, songIdx: i, rating: r });
+    });
+  });
+  return arr;
+}
+
+function userReleaseAvg(user, rel) {
+  let total = 0, cnt = 0;
+  rel.songs.forEach((_, i) => {
+    const r = user.ratings[ratingKey(rel.id, i)] || 0;
+    if (r > 0) { total += r; cnt++; }
+  });
+  return cnt > 0 ? { avg: total / cnt, count: cnt } : null;
+}
+
+function buildRelDist(user, rel) {
+  const d = Array(10).fill(0);
+  rel.songs.forEach((_, i) => {
+    const r = user.ratings[ratingKey(rel.id, i)] || 0;
+    if (r >= 1 && r <= 10) d[r - 1]++;
+  });
+  return d;
+}
+
+function stdDevOf(vals) {
+  if (vals.length < 2) return 0;
+  const mean = vals.reduce((a,b)=>a+b,0)/vals.length;
+  return Math.sqrt(vals.reduce((s,v)=>s+Math.pow(v-mean,2),0)/vals.length);
+}
+
+function miniDistBars(relDist) {
+  const mx = Math.max(...relDist, 1);
+  return relDist.map((c, i) => {
+    const h = Math.round((c / mx) * 28);
+    const col = (i+1) >= 8 ? 'var(--accent)' : (i+1) >= 5 ? 'var(--text-mid)' : 'var(--red)';
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1">
+      <div style="width:100%;height:${Math.max(h, c ? 3 : 0)}px;background:${c ? col : 'var(--mid)'};border-radius:1px"></div>
+      <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-dim)">${i+1}</div>
+    </div>`;
+  }).join('');
+}
+
+function sectionBand(label, type) {
+  return `<div class="stats-section-band ${type}">${label}</div>`;
+}
+
+function pCard(content) {
+  return `<div class="stats-card personal-card">${content}</div>`;
+}
+
+function gCard(content) {
+  return `<div class="stats-card group-card">${content}</div>`;
+}
+
+function h3(label, type) {
+  return `<h3><span class="h3-dot"></span>${label}</h3>`;
+}
+
+// ── PERSONAL / USER STATS ──
+function renderUserStats(container, user, isMe) {
+  const accentLabel = isMe ? 'your' : `${user.name}'s`;
+  const titleLabel  = isMe ? `Your Stats` : `${user.name}'s Stats`;
+  const allRatings  = userAllRatings(user);
+  const totalRated  = allRatings.length;
+  const totalSongs  = getTotalSongs();
+  const pct         = totalSongs > 0 ? Math.round((totalRated/totalSongs)*100) : 0;
+  const overallAvg  = totalRated > 0 ? allRatings.reduce((s,x)=>s+x.rating,0)/totalRated : null;
+
+  // Distribution
+  const dist = Array(10).fill(0);
+  allRatings.forEach(x => { if (x.rating>=1&&x.rating<=10) dist[x.rating-1]++; });
+  const maxDist = Math.max(...dist, 1);
+
+  // Per-release
+  const perRelease = RELEASES.map(rel => {
+    const res = userReleaseAvg(user, rel);
+    if (!res) return null;
+    const relDist = buildRelDist(user, rel);
+    const ratings = rel.songs.map((_,i)=>user.ratings[ratingKey(rel.id,i)]||0).filter(r=>r>0);
+    const sd = stdDevOf(ratings);
+    return { rel, avg: res.avg, count: res.count, relDist, stdDev: sd };
+  }).filter(Boolean).sort((a,b)=>b.avg-a.avg);
+
+  const sortedSongs = [...allRatings].sort((a,b)=>b.rating-a.rating);
+  const topSongs    = sortedSongs.slice(0,10);
+  const bottomSongs = [...sortedSongs].reverse().slice(0,10);
+  const tens        = allRatings.filter(x=>x.rating===10);
+  const loved       = allRatings.filter(x=>x.rating>=8).length;
+  const liked       = allRatings.filter(x=>x.rating>=6&&x.rating<=7).length;
+  const meh         = allRatings.filter(x=>x.rating>=4&&x.rating<=5).length;
+  const disliked    = allRatings.filter(x=>x.rating<=3).length;
+
+  const sorted  = allRatings.map(x=>x.rating).sort((a,b)=>a-b);
+  const median  = sorted.length ? (sorted.length%2===0
+    ? (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2
+    : sorted[Math.floor(sorted.length/2)]) : null;
+
+  const eraBest  = perRelease[0]||null;
+  const eraWorst = perRelease[perRelease.length-1]||null;
+
+  const consistent = [...perRelease].filter(x=>x.count>=3).sort((a,b)=>a.stdDev-b.stdDev);
+  const varied     = [...perRelease].filter(x=>x.count>=3).sort((a,b)=>b.stdDev-a.stdDev);
+
+  const studioByYear = RELEASES
+    .filter(r=>r.type==='album')
+    .map(rel=>{ const res=userReleaseAvg(user,rel); return res?{rel,avg:res.avg}:null; })
+    .filter(Boolean)
+    .sort((a,b)=>a.rel.year-b.rel.year);
+
+  container.innerHTML = `
+    <!-- Page title -->
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--accent)">
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0"></div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-0.02em">${titleLabel}</div>
+      <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--accent);letter-spacing:0.08em;margin-left:auto">PERSONAL</div>
+    </div>
+
+    <!-- Overview tiles -->
+    <div class="stat-grid" style="margin-bottom:1.5rem">
+      ${[
+        { val: totalRated, label: 'Songs rated' },
+        { val: overallAvg!==null?overallAvg.toFixed(1):'—', label: 'Avg rating' },
+        { val: median!==null?median.toFixed(1):'—', label: 'Median' },
+        { val: pct+'%', label: 'Complete' },
+        { val: tens.length, label: 'Perfect 10s' },
+        { val: perRelease.length, label: 'Albums started' },
+      ].map(t=>`<div class="stat-tile"><div class="stat-val">${t.val}</div><div class="stat-label">${t.label}</div></div>`).join('')}
+    </div>
+
+    <!-- Progress -->
+    ${pCard(`
+      <div style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:0.7rem;color:var(--text-dim);margin-bottom:0.6rem">
+        <span>${totalRated} of ${totalSongs} songs rated</span><span>${pct}%</span>
+      </div>
+      <div style="height:5px;background:var(--mid);border-radius:2px;overflow:hidden">
+        <div style="height:5px;width:${pct}%;background:var(--accent);border-radius:2px;transition:width 0.8s ease"></div>
+      </div>
+    `)}
+
+    ${sectionBand('Taste profile', 'personal')}
+
+    <!-- Grade breakdown -->
+    ${totalRated>0?pCard(`
+      ${h3('How you rate')}
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:1rem">
+        ${[
+          {label:'Loved',sub:'8–10',count:loved,col:'var(--accent)'},
+          {label:'Liked',sub:'6–7',count:liked,col:'var(--blue)'},
+          {label:'Meh',sub:'4–5',count:meh,col:'var(--text-mid)'},
+          {label:'Disliked',sub:'1–3',count:disliked,col:'var(--red)'},
+        ].map(g=>`
+          <div style="background:var(--mid);border-radius:2px;padding:0.85rem 0.4rem;text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${g.col}">${g.count}</div>
+            <div style="font-size:0.7rem;font-weight:600;color:var(--text-mid);margin-top:0.1rem">${g.label}</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:0.58rem;color:var(--text-dim)">${g.sub}</div>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;height:6px;border-radius:2px;overflow:hidden;gap:1px">
+        ${loved>0?`<div style="flex:${loved};background:var(--accent)"></div>`:''}
+        ${liked>0?`<div style="flex:${liked};background:var(--blue)"></div>`:''}
+        ${meh>0?`<div style="flex:${meh};background:var(--text-dim)"></div>`:''}
+        ${disliked>0?`<div style="flex:${disliked};background:var(--red)"></div>`:''}
+      </div>
+      ${tens.length>0?`<div style="font-family:'Syne Mono',monospace;font-size:0.68rem;color:var(--text-dim);margin-top:0.85rem">
+        Perfect 10s → ${tens.map(x=>`<span style="color:var(--accent)">${x.song}</span>`).join(', ')}
+      </div>`:''}
+    `):''}
+
+    <!-- Best / Worst -->
+    ${eraBest?`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">
+      <div class="stats-card personal-card">
+        <div style="font-family:'Syne Mono',monospace;font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem">Highest rated</div>
+        <div style="font-weight:700;font-size:0.88rem;line-height:1.2;margin-bottom:0.15rem">${eraBest.rel.title}</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);margin-bottom:0.4rem">${eraBest.rel.year}</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--accent)">${eraBest.avg.toFixed(2)}<span style="font-size:0.72rem;font-weight:400;color:var(--text-dim)">/10</span></div>
+      </div>
+      <div class="stats-card personal-card">
+        <div style="font-family:'Syne Mono',monospace;font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--red);margin-bottom:0.5rem">Lowest rated</div>
+        <div style="font-weight:700;font-size:0.88rem;line-height:1.2;margin-bottom:0.15rem">${eraWorst.rel.title}</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);margin-bottom:0.4rem">${eraWorst.rel.year}</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--red)">${eraWorst.avg.toFixed(2)}<span style="font-size:0.72rem;font-weight:400;color:var(--text-dim)">/10</span></div>
+      </div>
+    </div>` : ''}
+
+    <!-- Consistency -->
+    ${consistent.length>=2?`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">
+      <div class="stats-card personal-card">
+        <div style="font-family:'Syne Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:0.5rem">Most consistent</div>
+        <div style="font-weight:700;font-size:0.88rem;line-height:1.2;margin-bottom:0.15rem">${consistent[0].rel.title}</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim)">σ ${consistent[0].stdDev.toFixed(2)}</div>
+      </div>
+      <div class="stats-card personal-card">
+        <div style="font-family:'Syne Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-mid);margin-bottom:0.5rem">Most varied</div>
+        <div style="font-weight:700;font-size:0.88rem;line-height:1.2;margin-bottom:0.15rem">${varied[0].rel.title}</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim)">σ ${varied[0].stdDev.toFixed(2)}</div>
+      </div>
+    </div>` : ''}
+
+    ${sectionBand('Albums', 'personal')}
+
+    <!-- Albums ranked -->
+    ${perRelease.length?pCard(`
+      ${h3('Albums by avg rating')}
+      ${perRelease.map((x,i)=>`
+        <div class="rank-row" style="flex-direction:column;align-items:stretch;gap:0.25rem;padding:0.65rem 0">
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <div class="rank-num">${i+1}</div>
+            <div style="flex:1">
+              <div class="rank-name">${x.rel.title}</div>
+              <div class="rank-sub">${x.rel.year} · ${x.count}/${x.rel.songs.length} songs</div>
+            </div>
+            <div class="rank-score">${x.avg.toFixed(2)}</div>
+          </div>
+          <div style="padding-left:44px">
+            <div style="height:3px;background:var(--mid);border-radius:2px;overflow:hidden">
+              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:var(--accent);border-radius:2px"></div>
+            </div>
+          </div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Overall distribution -->
+    ${totalRated>0?pCard(`
+      ${h3('Overall rating distribution')}
+      ${dist.map((count,i)=>{
+        const pctBar=Math.round((count/maxDist)*100);
+        const col=(i+1)>=8?'var(--accent)':(i+1)>=5?'var(--text-mid)':'var(--red)';
+        return `<div class="dist-bar-row">
+          <div class="dist-bar-label" style="color:${col}">${i+1}</div>
+          <div class="dist-bar-track"><div class="dist-bar-fill" style="width:${pctBar}%;background:${col}"></div></div>
+          <div class="dist-bar-count">${count>0?count:''}</div>
+        </div>`;
+      }).join('')}
+    `):''}
+
+    <!-- Per-album distributions -->
+    ${perRelease.length>=1?pCard(`
+      ${h3('Distribution by album')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1.25rem">Bar height = songs at each rating (1–10) · σ = standard deviation</div>
+      ${perRelease.map(x=>`
+        <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem">
+            <div style="font-weight:600;font-size:0.82rem">${x.rel.title}</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--accent)">${x.avg.toFixed(2)} avg · σ ${x.stdDev.toFixed(1)}</div>
+          </div>
+          <div style="display:flex;gap:3px;align-items:flex-end;height:36px">${miniDistBars(x.relDist)}</div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Era preference -->
+    ${studioByYear.length>=2?pCard(`
+      ${h3('Era preference — studio albums')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Chronological avg rating</div>
+      ${studioByYear.map(x=>{
+        const isBest=x.avg===Math.max(...studioByYear.map(s=>s.avg));
+        return `<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.6rem">
+          <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);width:32px;flex-shrink:0">${x.rel.year}</div>
+          <div style="flex:1">
+            <div style="font-size:0.78rem;font-weight:${isBest?'700':'400'};color:${isBest?'var(--text)':'var(--text-mid)'};margin-bottom:0.2rem">${x.rel.title}</div>
+            <div style="height:4px;background:var(--mid);border-radius:2px;overflow:hidden">
+              <div style="height:4px;width:${Math.round((x.avg/10)*100)}%;background:${isBest?'var(--accent)':'var(--text-dim)'};border-radius:2px"></div>
+            </div>
+          </div>
+          <div style="font-family:'Syne Mono',monospace;font-size:0.7rem;color:${isBest?'var(--accent)':'var(--text-dim)'};width:32px;text-align:right">${x.avg.toFixed(1)}</div>
+        </div>`;
+      }).join('')}
+    `):''}
+
+    ${sectionBand('Songs', 'personal')}
+
+    <!-- Top songs -->
+    ${topSongs.length?pCard(`
+      ${h3('Top 10 songs')}
+      ${topSongs.map((x,i)=>`
+        <div class="rank-row">
+          <div class="rank-num">${i+1}</div>
+          <div><div class="rank-name">${x.song}</div><div class="rank-sub">${x.release.title} · ${x.release.year}</div></div>
+          <div class="rank-score">${x.rating}/10</div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Bottom songs -->
+    ${bottomSongs.length>=3?pCard(`
+      ${h3('Bottom 10 songs')}
+      ${bottomSongs.map((x,i)=>`
+        <div class="rank-row">
+          <div class="rank-num" style="color:var(--red)">${i+1}</div>
+          <div><div class="rank-name">${x.song}</div><div class="rank-sub">${x.release.title} · ${x.release.year}</div></div>
+          <div class="rank-score" style="color:var(--red)">${x.rating}/10</div>
+        </div>`).join('')}
+    `):''}
+
+    ${buildPersonalInsights(user)}
+
+    ${sectionBand('Visualizations', 'personal')}
+
+    ${buildHeatMap(user, titleLabel, 'personal')}
+    ${buildRadar(user, titleLabel, 'personal')}
+    ${buildTimeline(user, 'personal')}
+    ${buildScatter(user)}
+    ${buildViolinPlot(user, 'personal')}
+
+    ${isMe?`
+    <hr class="section-divider">
+    <div class="stats-card">
+      <h3><span class="h3-dot" style="background:var(--text-dim)"></span>Invite a friend</h3>
+      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.75rem;line-height:1.6">Share this link so friends can join and appear in comparisons.</p>
+      <div class="share-url" onclick="copyShare()">${window.location.href.split('?')[0]}?user=${encodeURIComponent(currentUser.name)}</div>
+      <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);margin-top:0.4rem">↑ Click to copy</div>
+    </div>`:''}
+  `;
+}
+
+// ── GROUP STATS ──
+function renderGroupStats(container) {
+  const friends    = Object.values(allUsers).filter(u => u.key !== currentUser.key && isValidUser(u));
+  const allMembers = Object.values(allUsers).filter(isValidUser);
+
+  // per-release group avg
+  const groupPerRelease = RELEASES.map(rel => {
+    const memberAvgs = allMembers.map(u => {
+      const res = userReleaseAvg(u, rel);
+      return res ? res.avg : null;
+    }).filter(v => v !== null);
+    if (!memberAvgs.length) return null;
+    const avg = memberAvgs.reduce((a,b)=>a+b,0)/memberAvgs.length;
+    const sd  = stdDevOf(memberAvgs);
+    // dist across all users
+    const relDist = Array(10).fill(0);
+    allMembers.forEach(u => {
+      rel.songs.forEach((_,i) => {
+        const r = u.ratings[ratingKey(rel.id,i)]||0;
+        if (r>=1&&r<=10) relDist[r-1]++;
+      });
+    });
+    const totalRatedSongs = relDist.reduce((a,b)=>a+b,0);
+    return { rel, avg, sd, memberAvgs, memberCount: memberAvgs.length, relDist, totalRatedSongs };
+  }).filter(Boolean).sort((a,b)=>b.avg-a.avg);
+
+  // overall group ratings
+  const groupAllRatings = [];
+  allMembers.forEach(u => {
+    RELEASES.forEach(rel => {
+      rel.songs.forEach((song,i) => {
+        const r = u.ratings[ratingKey(rel.id,i)]||0;
+        if (r>0) groupAllRatings.push({ user: u, release: rel, song, songIdx: i, rating: r });
+      });
+    });
+  });
+
+  // group distribution
+  const gDist = Array(10).fill(0);
+  groupAllRatings.forEach(x => { if (x.rating>=1&&x.rating<=10) gDist[x.rating-1]++; });
+  const gMaxDist = Math.max(...gDist,1);
+
+  // Most divisive SONGS (rated by ≥2 users)
+  const songDivisive = [];
+  RELEASES.forEach(rel => {
+    rel.songs.forEach((song, i) => {
+      const ratings = allMembers.map(u => u.ratings[ratingKey(rel.id,i)]||0).filter(r=>r>0);
+      if (ratings.length < 2) return;
+      const mean = ratings.reduce((a,b)=>a+b,0)/ratings.length;
+      const sd   = stdDevOf(ratings);
+      songDivisive.push({ rel, song, songIdx: i, mean, sd, ratings });
+    });
+  });
+  songDivisive.sort((a,b)=>b.sd-a.sd);
+
+  // Most divisive ALBUMS
+  const albumDivisive = groupPerRelease
+    .filter(x => x.memberCount>=2)
+    .sort((a,b)=>b.sd-a.sd);
+
+  // Per-member avg
+  const memberAvgs = allMembers.map(u => {
+    const ur = userAllRatings(u);
+    const avg = ur.length ? ur.reduce((s,x)=>s+x.rating,0)/ur.length : null;
+    return { user: u, avg, count: ur.length };
+  }).filter(x=>x.avg!==null).sort((a,b)=>b.avg-a.avg);
+
+  // Most agreed songs (sd closest to 0, rated by ≥2)
+  const agreedSongs = [...songDivisive].sort((a,b)=>a.sd-b.sd).slice(0,5);
+  // most agreed albums
+  const agreedAlbums = [...albumDivisive].sort((a,b)=>a.sd-b.sd).slice(0,5);
+
+  // friend comparison pairs
+  const pairs = [];
+  for (let i=0;i<allMembers.length;i++) {
+    for (let j=i+1;j<allMembers.length;j++) {
+      const u1=allMembers[i], u2=allMembers[j];
+      const shared=RELEASES.filter(rel=>{
+        const a=userReleaseAvg(u1,rel), b=userReleaseAvg(u2,rel);
+        return a&&b;
+      });
+      if (!shared.length) continue;
+      const diffs=shared.map(rel=>Math.abs((userReleaseAvg(u1,rel)?.avg||0)-(userReleaseAvg(u2,rel)?.avg||0)));
+      const avgDiff=diffs.reduce((a,b)=>a+b,0)/diffs.length;
+      pairs.push({ u1, u2, avgDiff, shared: shared.length });
+    }
+  }
+  pairs.sort((a,b)=>a.avgDiff-b.avgDiff);
+
+  container.innerHTML = `
+    <!-- Page title -->
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--blue)">
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-0.02em">Group Stats</div>
+      <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--blue);letter-spacing:0.08em;margin-left:auto">GROUP · ${allMembers.length} MEMBERS</div>
+    </div>
+
+    ${sectionBand('Members', 'group')}
+
+    <!-- Member averages -->
+    ${gCard(`
+      ${h3('Member averages')}
+      ${memberAvgs.map((m,i)=>`
+        <div class="rank-row">
+          <div class="rank-num">${i+1}</div>
+          <div style="flex:1">
+            <div class="rank-name">${m.user.name}${m.user.key===currentUser.key?' <span style="font-family:\'Syne Mono\',monospace;font-size:0.6rem;color:var(--accent)">you</span>':''}</div>
+            <div class="rank-sub">${m.count} songs rated</div>
+          </div>
+          <div class="rank-score" style="color:var(--blue)">${m.avg.toFixed(2)}</div>
+        </div>`).join('')}
+    `)}
+
+    ${sectionBand('Group albums', 'group')}
+
+    <!-- Group album ranking -->
+    ${groupPerRelease.length?gCard(`
+      ${h3('Albums — group avg')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Averaged across all members who've rated that album</div>
+      ${groupPerRelease.map((x,i)=>`
+        <div class="rank-row" style="flex-direction:column;align-items:stretch;gap:0.25rem;padding:0.65rem 0">
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <div class="rank-num">${i+1}</div>
+            <div style="flex:1">
+              <div class="rank-name">${x.rel.title}</div>
+              <div class="rank-sub">${x.rel.year} · ${x.memberCount} member${x.memberCount!==1?'s':''} · σ ${x.sd.toFixed(2)}</div>
+            </div>
+            <div class="rank-score" style="color:var(--blue)">${x.avg.toFixed(2)}</div>
+          </div>
+          <div style="padding-left:44px">
+            <div style="height:3px;background:var(--mid);border-radius:2px;overflow:hidden">
+              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:var(--blue);border-radius:2px"></div>
+            </div>
+          </div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Group distribution -->
+    ${groupAllRatings.length?gCard(`
+      ${h3('Group rating distribution')}
+      ${gDist.map((count,i)=>{
+        const pctBar=Math.round((count/gMaxDist)*100);
+        const col=(i+1)>=8?'var(--blue)':(i+1)>=5?'var(--text-mid)':'var(--red)';
+        return `<div class="dist-bar-row">
+          <div class="dist-bar-label" style="color:${col}">${i+1}</div>
+          <div class="dist-bar-track"><div class="dist-bar-fill" style="width:${pctBar}%;background:${col}"></div></div>
+          <div class="dist-bar-count">${count>0?count:''}</div>
+        </div>`;
+      }).join('')}
+    `):''}
+
+    <!-- Per-album group distributions -->
+    ${groupPerRelease.length?gCard(`
+      ${h3('Group distribution by album')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1.25rem">All members' ratings combined</div>
+      ${groupPerRelease.map(x=>`
+        <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem">
+            <div style="font-weight:600;font-size:0.82rem">${x.rel.title}</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--blue)">${x.avg.toFixed(2)} avg · σ ${x.sd.toFixed(1)}</div>
+          </div>
+          <div style="display:flex;gap:3px;align-items:flex-end;height:36px">${miniDistBars(x.relDist)}</div>
+        </div>`).join('')}
+    `):''}
+
+    ${sectionBand('Agreement & disagreement', 'group')}
+
+    <!-- Most agreed albums -->
+    ${agreedAlbums.length?gCard(`
+      ${h3('Most agreed-on albums')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Lowest standard deviation between members</div>
+      ${agreedAlbums.map((x,i)=>`
+        <div class="rank-row">
+          <div class="rank-num">${i+1}</div>
+          <div><div class="rank-name">${x.rel.title}</div><div class="rank-sub">Group avg ${x.avg.toFixed(1)} · σ ${x.sd.toFixed(2)}</div></div>
+          <div style="font-family:'Syne Mono',monospace;font-size:0.78rem;color:var(--blue)">σ ${x.sd.toFixed(2)}</div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Most divisive albums -->
+    ${albumDivisive.length?gCard(`
+      ${h3('Most divisive albums')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Highest standard deviation between members</div>
+      ${albumDivisive.slice(0,8).map((x,i)=>`
+        <div class="rank-row">
+          <div class="rank-num">${i+1}</div>
+          <div><div class="rank-name">${x.rel.title}</div>
+            <div class="rank-sub">Group avg ${x.avg.toFixed(1)} · ${x.memberCount} members · Ratings: ${x.memberAvgs.map(v=>v.toFixed(1)).join(', ')}</div>
+          </div>
+          <div class="rank-score" style="color:var(--red)">±${x.sd.toFixed(1)}</div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Most divisive songs -->
+    ${songDivisive.length?gCard(`
+      ${h3('Most divisive songs')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Songs with the biggest spread in ratings across members</div>
+      ${songDivisive.slice(0,10).map((x,i)=>`
+        <div class="rank-row">
+          <div class="rank-num">${i+1}</div>
+          <div>
+            <div class="rank-name">${x.song}</div>
+            <div class="rank-sub">${x.rel.title} · Ratings: ${x.ratings.join(', ')} · avg ${x.mean.toFixed(1)}</div>
+          </div>
+          <div class="rank-score" style="color:var(--red)">±${x.sd.toFixed(1)}</div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Most agreed songs -->
+    ${agreedSongs.length?gCard(`
+      ${h3('Most agreed-on songs')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Songs the whole group rates almost identically</div>
+      ${agreedSongs.map((x,i)=>`
+        <div class="rank-row">
+          <div class="rank-num">${i+1}</div>
+          <div>
+            <div class="rank-name">${x.song}</div>
+            <div class="rank-sub">${x.rel.title} · Ratings: ${x.ratings.join(', ')} · avg ${x.mean.toFixed(1)}</div>
+          </div>
+          <div style="font-family:'Syne Mono',monospace;font-size:0.78rem;color:var(--blue)">σ ${x.sd.toFixed(2)}</div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Head-to-head pairs -->
+    ${pairs.length?gCard(`
+      ${h3('Most in sync')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Member pairs ranked by avg album rating gap (lower = more in sync)</div>
+      ${pairs.map((p,i)=>`
+        <div class="rank-row">
+          <div class="rank-num">${i+1}</div>
+          <div>
+            <div class="rank-name">${p.u1.name} & ${p.u2.name}</div>
+            <div class="rank-sub">${p.shared} shared albums</div>
+          </div>
+          <div style="font-family:'Syne Mono',monospace;font-size:0.78rem;color:${p.avgDiff<1?'var(--blue)':p.avgDiff<2?'var(--text-mid)':'var(--red)'}">Δ${p.avgDiff.toFixed(1)}</div>
+        </div>`).join('')}
+    `):''}
+
+    // Build synthetic group-average user for heatmap
+    const groupAvgUser = (() => {
+      const ratings = {};
+      RELEASES.forEach(rel => {
+        rel.songs.forEach((_, i) => {
+          const key = ratingKey(rel.id, i);
+          const vals = allMembers.map(u => u.ratings[key]||0).filter(r=>r>0);
+          if (vals.length) ratings[key] = Math.round(vals.reduce((a,b)=>a+b)/vals.length * 10)/10;
+        });
+      });
+      return { name: 'Group', key: '__group__', ratings };
+    })();
+
+    ${sectionBand('Visualizations', 'group')}
+
+    ${buildHeatMap(groupAvgUser, 'Group', 'group')}
+    ${buildRadar(currentUser, 'Group', 'group', friends.length ? friends[0] : null)}
+    ${buildViolinPlot(null, 'group')}
+    ${buildCorrelationMatrix()}
+    ${buildGroupInsightCards()}
+
+    <hr class="section-divider">
+    <div class="stats-card group-card">
+      <h3><span class="h3-dot"></span>Invite a friend</h3>
+      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.75rem;line-height:1.6">Share ${currentUser.name}'s link to grow the club.</p>
+      <div class="share-url" onclick="copyShare()">${window.location.href.split('?')[0]}?user=${encodeURIComponent(currentUser.name)}</div>
+      <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);margin-top:0.4rem">↑ Click to copy</div>
+    </div>
+  `;
+}
+// =====================
+// VISUALIZATION HELPERS
+// =====================
+
+const TT = document.getElementById('vizTooltip') || (() => {
+  const d = document.createElement('div');
+  d.className = 'viz-tooltip';
+  d.id = 'vizTooltip';
+  document.body.appendChild(d);
+  return d;
+})();
+
+function showTT(e, html) {
+  TT.innerHTML = html;
+  TT.style.display = 'block';
+  moveTT(e);
+}
+function moveTT(e) {
+  TT.style.left = (e.clientX + 14) + 'px';
+  TT.style.top  = (e.clientY - 28) + 'px';
+}
+function hideTT() { TT.style.display = 'none'; }
+
+// Color scale: 0=unrated gray, 1=deep red, 10=bright green
+function ratingColor(r) {
+  if (!r || r === 0) return 'rgba(255,255,255,0.05)';
+  const stops = [
+    [1,  [180, 30,  20]],
+    [4,  [160, 80,  20]],
+    [5,  [130, 110, 30]],
+    [6,  [80,  120, 50]],
+    [8,  [30,  140, 80]],
+    [10, [20,  180, 100]],
+  ];
+  let lo = stops[0], hi = stops[stops.length-1];
+  for (let i = 0; i < stops.length-1; i++) {
+    if (r >= stops[i][0] && r <= stops[i+1][0]) { lo = stops[i]; hi = stops[i+1]; break; }
+  }
+  const t = (r - lo[0]) / (hi[0] - lo[0]);
+  const rgb = lo[1].map((c,i) => Math.round(c + (hi[1][i]-c)*t));
+  return `rgb(${rgb.join(',')})`;
+}
+
+// ── 1. HEAT MAP ──
+function buildHeatMap(user, title, type) {
+  const albums = RELEASES.filter(r => r.type === 'album');
+  const maxTracks = Math.max(...albums.map(a => a.songs.length));
+
+  let rows = albums.map(alb => {
+    const cells = alb.songs.map((song, i) => {
+      const r = user.ratings[ratingKey(alb.id, i)] || 0;
+      const col = ratingColor(r);
+      const label = r > 0 ? r : '—';
+      return `<td style="padding:1px">
+        <div class="hm-cell" style="background:${col}"
+          onmouseenter="showTT(event,'<b>${song.replace(/'/g,"&#39;")}</b><br>${alb.title}<br>${r>0?r+'/10':'unrated'}')"
+          onmousemove="moveTT(event)"
+          onmouseleave="hideTT()"></div>
+      </td>`;
+    });
+    // Pad to maxTracks
+    while (cells.length < maxTracks) cells.push(`<td style="padding:1px"><div class="hm-cell" style="background:transparent"></div></td>`);
+    return `<tr>
+      <td class="hm-album-label" title="${alb.title}">${alb.title.replace('OK Computer','OKC').replace('A Moon Shaped Pool','AMSP').replace('Hail to the Thief','HTTT').replace('In Rainbows','IR').replace('The King of Limbs','KOL').replace('Kid A','Kid A').replace('Pablo Honey','Pablo H.')}</td>
+      ${cells.join('')}
+    </tr>`;
+  });
+
+  // Track number header
+  const header = `<tr><td></td>${Array.from({length:maxTracks},(_,i)=>`<td><div class="hm-track-label">${i+1}</div></td>`).join('')}</tr>`;
+
+  // Legend
+  const legend = [1,2,3,4,5,6,7,8,9,10].map(r =>
+    `<div style="display:flex;align-items:center;gap:3px;font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-dim)">
+      <div style="width:14px;height:14px;border-radius:2px;background:${ratingColor(r)}"></div>${r}
+    </div>`
+  ).join('');
+
+  return `<div class="viz-card ${type}-card">
+    <h3><span class="h3-dot"></span>Rating heat map — songs × albums</h3>
+    <div class="viz-sub">Each cell = one song. Hover for details. Color: red (low) → green (high). Grey = unrated.</div>
+    <div class="heatmap-wrap">
+      <table class="heatmap-table">
+        ${header}
+        ${rows.join('')}
+      </table>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:1rem;align-items:center">
+      <span style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim);margin-right:4px">Rating:</span>
+      ${legend}
+    </div>
+  </div>`;
+}
+
+// ── 2. RADAR / SPIDER CHART (studio albums) ──
+function buildRadar(user, title, type, compareUser) {
+  const albums = RELEASES.filter(r => r.type === 'album');
+  const N = albums.length;
+  const cx = 200, cy = 200, R = 150;
+  const avgs = albums.map(a => {
+    const res = userReleaseAvg(user, a);
+    return res ? res.avg : null;
+  });
+  const hasData = avgs.some(v => v !== null);
+  if (!hasData) return '';
+
+  const angleStep = (2 * Math.PI) / N;
+  const scale = v => v === null ? 0 : (v / 10) * R;
+
+  // Grid rings
+  const rings = [2,4,6,8,10].map(v => {
+    const pts = albums.map((_, i) => {
+      const a = i * angleStep - Math.PI/2;
+      const r = (v/10)*R;
+      return `${cx + r*Math.cos(a)},${cy + r*Math.sin(a)}`;
+    }).join(' ');
+    return `<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      <text x="${cx + (v/10)*R*Math.cos(-Math.PI/2) + 4}" y="${cy + (v/10)*R*Math.sin(-Math.PI/2)}" 
+        font-family="'Syne Mono',monospace" font-size="8" fill="rgba(255,255,255,0.25)">${v}</text>`;
+  });
+
+  // Spokes
+  const spokes = albums.map((a, i) => {
+    const ang = i * angleStep - Math.PI/2;
+    const x2 = cx + R*Math.cos(ang), y2 = cy + R*Math.sin(ang);
+    // Label placement
+    const lx = cx + (R+22)*Math.cos(ang), ly = cy + (R+22)*Math.sin(ang);
+    const anchor = lx < cx-5 ? 'end' : lx > cx+5 ? 'start' : 'middle';
+    const shortName = a.title.replace('OK Computer','OKC').replace('A Moon Shaped Pool','AMSP')
+      .replace('Hail to the Thief','HTTT').replace('In Rainbows','IR')
+      .replace('The King of Limbs','KOL').replace('Pablo Honey','Pablo H.')
+      .replace('KID A MNESIA','KAM').replace('OK Computer OKNOTOK 1997–2017','OKNOTOK');
+    return `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <text x="${lx}" y="${ly}" text-anchor="${anchor}" dominant-baseline="central"
+        font-family="'Syne Mono',monospace" font-size="7.5" fill="rgba(232,232,232,0.5)">${shortName}</text>`;
+  });
+
+  // User polygon
+  const userPts = albums.map((a, i) => {
+    const ang = i * angleStep - Math.PI/2;
+    const v = scale(avgs[i]);
+    return `${cx + v*Math.cos(ang)},${cy + v*Math.sin(ang)}`;
+  }).join(' ');
+
+  const accentCol = type === 'personal' ? '#c0392b' : '#7eb8ff';
+
+  // Optional compare polygon
+  let comparePoly = '';
+  if (compareUser) {
+    const cAvgs = albums.map(a => { const r = userReleaseAvg(compareUser, a); return r ? r.avg : null; });
+    const cPts = albums.map((a,i) => {
+      const ang = i*angleStep - Math.PI/2;
+      const v = scale(cAvgs[i]);
+      return `${cx+v*Math.cos(ang)},${cy+v*Math.sin(ang)}`;
+    }).join(' ');
+    comparePoly = `<polygon points="${cPts}" fill="rgba(126,184,255,0.08)" stroke="#7eb8ff" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  }
+
+  // Dots with tooltips
+  const dots = albums.map((a,i) => {
+    const ang = i*angleStep - Math.PI/2;
+    const v = scale(avgs[i]);
+    if (!avgs[i]) return '';
+    return `<circle cx="${(cx+v*Math.cos(ang)).toFixed(1)}" cy="${(cy+v*Math.sin(ang)).toFixed(1)}" r="3.5"
+      fill="${accentCol}" stroke="var(--dark)" stroke-width="1.5"
+      onmouseenter="showTT(event,'${a.title}<br>${avgs[i].toFixed(2)}/10')"
+      onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default"/>`;
+  });
+
+  const svgW = 400, svgH = 400;
+  return `<div class="viz-card ${type}-card">
+    <h3><span class="h3-dot"></span>Album radar</h3>
+    <div class="viz-sub">Your rating for each studio album on a radial axis. Larger polygon = higher overall ratings.${compareUser?` Dashed = ${compareUser.name}.`:''}</div>
+    <div class="radar-wrap">
+      <svg width="100%" viewBox="0 0 ${svgW} ${svgH}" style="max-width:400px">
+        ${rings.join('')}
+        ${spokes.join('')}
+        <polygon points="${userPts}" fill="${accentCol}22" stroke="${accentCol}" stroke-width="2"/>
+        ${comparePoly}
+        ${dots.join('')}
+      </svg>
+    </div>
+  </div>`;
+}
+
+// ── 3. TIMELINE BAR CHART ──
+function buildTimeline(user, type) {
+  const albums = RELEASES.filter(r => r.type === 'album').sort((a,b)=>a.year-b.year);
+  const avgs = albums.map(a => userReleaseAvg(user, a));
+  const hasData = avgs.some(v=>v!==null);
+  if (!hasData) return '';
+
+  const maxAvg = 10;
+  const barH = 28, gap = 6, labelW = 52, svgW = 680;
+  const barAreaW = svgW - labelW - 60;
+  const totalH = albums.length * (barH + gap) + 40;
+  const accentCol = type==='personal' ? '#c0392b' : '#7eb8ff';
+  const bestAvg = Math.max(...avgs.filter(v=>v!==null).map(v=>v.avg));
+
+  const bars = albums.map((a,i) => {
+    const res = avgs[i];
+    const y = 30 + i*(barH+gap);
+    if (!res) {
+      return `<rect x="${labelW}" y="${y}" width="60" height="${barH}" rx="1" fill="rgba(255,255,255,0.04)"/>
+        <text x="${labelW+8}" y="${y+barH/2}" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(255,255,255,0.2)">unrated</text>
+        <text x="${labelW-4}" y="${y+barH/2}" text-anchor="end" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,0.35)">${a.year}</text>`;
+    }
+    const w = Math.round((res.avg/maxAvg)*barAreaW);
+    const isBest = res.avg === bestAvg;
+    const col = isBest ? accentCol : ratingColor(Math.round(res.avg));
+    const shortName = a.title.replace('OK Computer OKNOTOK 1997–2017','OKNOTOK');
+    return `<g onmouseenter="showTT(event,'<b>${a.title}</b><br>${a.year}<br>${res.avg.toFixed(2)}/10 avg<br>${res.count}/${a.songs.length} songs')" onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default">
+      <text x="${labelW-4}" y="${y+barH/2}" text-anchor="end" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,${isBest?'0.9':'0.45'})">${a.year}</text>
+      <rect x="${labelW}" y="${y}" width="${w}" height="${barH}" rx="1" fill="${col}" opacity="${isBest?1:0.75}"/>
+      <text x="${labelW+w+6}" y="${y+barH/2}" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9.5" fill="${isBest?accentCol:'rgba(232,232,232,0.55)'}" font-weight="${isBest?'700':'400'}">${res.avg.toFixed(1)}</text>
+    </g>`;
+  });
+
+  // Axis lines at 2,4,6,8,10
+  const axisLines = [2,4,6,8,10].map(v => {
+    const x = labelW + Math.round((v/maxAvg)*barAreaW);
+    return `<line x1="${x}" y1="20" x2="${x}" y2="${totalH-10}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      <text x="${x}" y="16" text-anchor="middle" font-family="'Syne Mono',monospace" font-size="8" fill="rgba(255,255,255,0.2)">${v}</text>`;
+  });
+
+  return `<div class="viz-card ${type}-card">
+    <h3><span class="h3-dot"></span>Album timeline</h3>
+    <div class="viz-sub">Studio albums in chronological order. Bar length = avg rating. Hover for details.</div>
+    <div style="overflow-x:auto">
+      <svg width="100%" viewBox="0 0 ${svgW} ${totalH}" style="min-width:300px">
+        ${axisLines.join('')}
+        ${bars.join('')}
+      </svg>
+    </div>
+  </div>`;
+}
+
+// ── 4. SCATTER PLOT: you vs group ──
+function buildScatter(currentU) {
+  const allMembers = Object.values(allUsers).filter(isValidUser);
+  if (allMembers.length < 2) return '';
+
+  const points = RELEASES.map(rel => {
+    const myRes = userReleaseAvg(currentU, rel);
+    if (!myRes) return null;
+    const othersAvgs = allMembers
+      .filter(u => u.key !== currentU.key)
+      .map(u => { const r = userReleaseAvg(u, rel); return r ? r.avg : null; })
+      .filter(v => v !== null);
+    if (!othersAvgs.length) return null;
+    const groupAvg = othersAvgs.reduce((a,b)=>a+b,0)/othersAvgs.length;
+    return { rel, mine: myRes.avg, group: groupAvg, diff: myRes.avg - groupAvg };
+  }).filter(Boolean);
+
+  if (!points.length) return '';
+
+  const pad = 40, w = 580, h = 400;
+  const plotW = w - pad*2, plotH = h - pad*2;
+  const toX = v => pad + ((v-1)/9)*plotW;
+  const toY = v => pad + ((10-v)/9)*plotH;
+
+  // Diagonal reference line (perfect agreement)
+  const diagLine = `<line x1="${toX(1)}" y1="${toY(1)}" x2="${toX(10)}" y2="${toY(10)}" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 4"/>`;
+
+  const dots = points.map(p => {
+    const x = toX(p.group).toFixed(1), y = toY(p.mine).toFixed(1);
+    const col = p.diff > 0.5 ? '#c0392b' : p.diff < -0.5 ? '#7eb8ff' : 'rgba(232,232,232,0.5)';
+    const label = p.diff > 0.5 ? '▲ you rate higher' : p.diff < -0.5 ? '▼ group rates higher' : '≈ agreed';
+    return `<circle cx="${x}" cy="${y}" r="5" fill="${col}" stroke="var(--dark)" stroke-width="1.5" opacity="0.85"
+      onmouseenter="showTT(event,'<b>${p.rel.title}</b><br>You: ${p.mine.toFixed(1)} · Group: ${p.group.toFixed(1)}<br>Δ ${p.diff>0?'+':''}${p.diff.toFixed(1)} — ${label}')"
+      onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default"/>`;
+  });
+
+  // Axis labels
+  const xLabels = [2,4,6,8,10].map(v =>
+    `<text x="${toX(v)}" y="${pad+plotH+14}" text-anchor="middle" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(255,255,255,0.3)">${v}</text>`
+  );
+  const yLabels = [2,4,6,8,10].map(v =>
+    `<text x="${pad-8}" y="${toY(v)}" text-anchor="end" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(255,255,255,0.3)">${v}</text>`
+  );
+  const axisTitle = `
+    <text x="${pad+plotW/2}" y="${h-4}" text-anchor="middle" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(255,255,255,0.25)">Group avg →</text>
+    <text x="10" y="${pad+plotH/2}" text-anchor="middle" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(255,255,255,0.25)" transform="rotate(-90,10,${pad+plotH/2})">Your avg →</text>`;
+
+  // Legend
+  const legend = `
+    <div style="display:flex;gap:1.25rem;margin-top:0.75rem;flex-wrap:wrap">
+      ${[['#c0392b','You rate higher (>+0.5)'],['rgba(232,232,232,0.5)','Close agreement (±0.5)'],['#7eb8ff','Group rates higher (>+0.5)']].map(([c,l])=>
+        `<div style="display:flex;align-items:center;gap:5px;font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim)">
+          <div style="width:10px;height:10px;border-radius:50%;background:${c}"></div>${l}
+        </div>`).join('')}
+    </div>`;
+
+  return `<div class="viz-card personal-card">
+    <h3><span class="h3-dot"></span>You vs the group</h3>
+    <div class="viz-sub">One dot per album. X = group avg · Y = your avg · Diagonal = perfect agreement · Hover for album.</div>
+    <div style="overflow-x:auto">
+      <svg width="100%" viewBox="0 0 ${w} ${h}" class="scatter-svg" style="min-width:280px">
+        ${diagLine}
+        <line x1="${toX(1)}" y1="${pad}" x2="${toX(1)}" y2="${pad+plotH}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <line x1="${toX(1)}" y1="${pad+plotH}" x2="${toX(10)}" y2="${pad+plotH}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        ${xLabels.join('')}${yLabels.join('')}${axisTitle}
+        ${dots.join('')}
+      </svg>
+    </div>
+    ${legend}
+  </div>`;
+}
+
+// ── 5. BOX / VIOLIN PLOT per album ──
+function buildViolinPlot(user, type) {
+  const albums = RELEASES.filter(r => r.type === 'album');
+  const allMembers = Object.values(allUsers).filter(isValidUser);
+  const useGroup = type === 'group';
+  if (!useGroup && !user) return '';
+
+  const data = albums.map(a => {
+    let vals;
+    if (useGroup) {
+      vals = [];
+      allMembers.forEach(u => {
+        a.songs.forEach((_,i) => {
+          const r = u.ratings[ratingKey(a.id,i)]||0;
+          if (r>0) vals.push(r);
+        });
+      });
+    } else {
+      vals = a.songs.map((_,i)=>user.ratings[ratingKey(a.id,i)]||0).filter(r=>r>0);
+    }
+    if (!vals.length) return null;
+    vals.sort((a,b)=>a-b);
+    const q1 = vals[Math.floor(vals.length*0.25)];
+    const median = vals[Math.floor(vals.length*0.5)];
+    const q3 = vals[Math.floor(vals.length*0.75)];
+    const mean = vals.reduce((s,v)=>s+v,0)/vals.length;
+    const min = vals[0], max = vals[vals.length-1];
+    return { alb: a, vals, q1, median, q3, mean, min, max };
+  }).filter(Boolean);
+
+  if (!data.length) return '';
+
+  const bw = 36, gap = 8, padL = 28, padT = 20, padB = 30;
+  const h = 220, plotH = h - padT - padB;
+  const totalW = padL + data.length*(bw+gap) + 20;
+  const toY = v => padT + ((10-v)/9)*plotH;
+
+  // Grid
+  const grid = [2,4,6,8,10].map(v=>`
+    <line x1="${padL}" y1="${toY(v)}" x2="${totalW-10}" y2="${toY(v)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+    <text x="${padL-4}" y="${toY(v)}" text-anchor="end" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="8" fill="rgba(255,255,255,0.25)">${v}</text>`
+  );
+
+  const accentCol = type==='personal'?'#c0392b':'#7eb8ff';
+
+  const boxes = data.map((d,i) => {
+    const x = padL + i*(bw+gap);
+    const cx = x + bw/2;
+    const shortName = d.alb.title.replace('OK Computer','OKC').replace('A Moon Shaped Pool','AMSP')
+      .replace('Hail to the Thief','HTTT').replace('In Rainbows','IR')
+      .replace('The King of Limbs','KOL').replace('Pablo Honey','Pablo')
+      .replace('KID A MNESIA','KAM').replace('OK Computer OKNOTOK 1997–2017','OKNOTOK');
+    const yQ1=toY(d.q1), yQ3=toY(d.q3), yMed=toY(d.median), yMean=toY(d.mean), yMin=toY(d.min), yMax=toY(d.max);
+
+    // Whiskers, box, median, mean dot
+    return `<g onmouseenter="showTT(event,'<b>${d.alb.title}</b><br>Median: ${d.median} · Mean: ${d.mean.toFixed(1)}<br>Q1: ${d.q1} · Q3: ${d.q3}<br>Range: ${d.min}–${d.max}<br>${d.vals.length} ratings')" onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default">
+      <line x1="${cx}" y1="${yMax}" x2="${cx}" y2="${yMin}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <line x1="${cx-5}" y1="${yMax}" x2="${cx+5}" y2="${yMax}" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+      <line x1="${cx-5}" y1="${yMin}" x2="${cx+5}" y2="${yMin}" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+      <rect x="${x+4}" y="${Math.min(yQ1,yQ3)}" width="${bw-8}" height="${Math.abs(yQ3-yQ1)||2}" rx="1" fill="${accentCol}30" stroke="${accentCol}80" stroke-width="1"/>
+      <line x1="${x+4}" y1="${yMed}" x2="${x+bw-4}" y2="${yMed}" stroke="${accentCol}" stroke-width="2"/>
+      <circle cx="${cx}" cy="${yMean}" r="2.5" fill="rgba(255,255,255,0.6)"/>
+      <text x="${cx}" y="${padT+plotH+14}" text-anchor="middle" font-family="'Syne Mono',monospace" font-size="7" fill="rgba(232,232,232,0.35)">${shortName}</text>
+    </g>`;
+  });
+
+  return `<div class="viz-card ${type}-card">
+    <h3><span class="h3-dot"></span>Box plot — rating spread per album</h3>
+    <div class="viz-sub">Box = Q1→Q3 · ${`<span style="color:${type==='personal'?'#c0392b':'#7eb8ff'}">─</span>`} = median · ● = mean · Whiskers = min/max · Hover for stats.</div>
+    <div style="overflow-x:auto">
+      <svg width="100%" viewBox="0 0 ${totalW} ${h}" class="violin-svg" style="min-width:300px">
+        ${grid.join('')}
+        ${boxes.join('')}
+      </svg>
+    </div>
+  </div>`;
+}
+
+// ── 6. PERSONAL: rating tendency, fence-sitter, intra-album range ──
+function buildPersonalInsights(user) {
+  const allRatings = userAllRatings(user);
+  if (allRatings.length < 5) return '';
+
+  const allMembers = Object.values(allUsers).filter(isValidUser);
+  const groupRatings = [];
+  allMembers.forEach(u => {
+    RELEASES.forEach(rel => {
+      rel.songs.forEach((_,i) => {
+        const r = u.ratings[ratingKey(rel.id,i)]||0;
+        if (r>0) groupRatings.push(r);
+      });
+    });
+  });
+  const myMean = allRatings.reduce((s,x)=>s+x.rating,0)/allRatings.length;
+  const groupMean = groupRatings.length ? groupRatings.reduce((a,b)=>a+b,0)/groupRatings.length : myMean;
+  const diff = myMean - groupMean;
+  const tendencyLabel = diff > 0.5 ? 'generous rater' : diff < -0.5 ? 'harsh critic' : 'calibrated rater';
+  const tendencyColor = diff > 0.5 ? '#c0392b' : diff < -0.5 ? '#7eb8ff' : 'rgba(232,232,232,0.6)';
+
+  const midCount = allRatings.filter(x=>x.rating>=5&&x.rating<=6).length;
+  const fencePct = Math.round((midCount/allRatings.length)*100);
+
+  // Intra-album range
+  const ranges = RELEASES.map(rel => {
+    const vals = rel.songs.map((_,i)=>user.ratings[ratingKey(rel.id,i)]||0).filter(r=>r>0);
+    if (vals.length < 3) return null;
+    return { rel, range: Math.max(...vals)-Math.min(...vals), min: Math.min(...vals), max: Math.max(...vals) };
+  }).filter(Boolean).sort((a,b)=>b.range-a.range);
+
+  return pCard(`
+    ${h3('Your rating tendencies')}
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1.25rem">
+      <div style="background:var(--mid);border-radius:2px;padding:1rem;text-align:center">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:${tendencyColor}">${myMean.toFixed(2)}</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim);margin-top:0.2rem">Your avg</div>
+        <div style="font-family:'Syne',sans-serif;font-size:0.68rem;color:${tendencyColor};margin-top:0.25rem">${tendencyLabel}</div>
+      </div>
+      <div style="background:var(--mid);border-radius:2px;padding:1rem;text-align:center">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:rgba(232,232,232,0.5)">${diff>0?'+':''}${diff.toFixed(2)}</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim);margin-top:0.2rem">vs group avg</div>
+        <div style="font-family:'Syne',sans-serif;font-size:0.68rem;color:var(--text-dim);margin-top:0.25rem">${groupRatings.length?groupMean.toFixed(2)+' group':'solo mode'}</div>
+      </div>
+      <div style="background:var(--mid);border-radius:2px;padding:1rem;text-align:center">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:${fencePct>40?'var(--red)':'rgba(232,232,232,0.5)'}">${fencePct}%</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim);margin-top:0.2rem">Fence-sitter</div>
+        <div style="font-family:'Syne',sans-serif;font-size:0.68rem;color:var(--text-dim);margin-top:0.25rem">ratings of 5–6</div>
+      </div>
+    </div>
+    ${ranges.length ? `
+    <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:0.75rem;letter-spacing:0.08em;text-transform:uppercase">Intra-album range (high–low spread)</div>
+    ${ranges.slice(0,5).map((r,i)=>`
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
+        <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);width:16px;text-align:right">${i+1}</div>
+        <div style="flex:1;font-size:0.82rem">${r.rel.title}</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.72rem;color:${r.range>=5?'var(--red)':'var(--text-mid)'}">
+          ${r.min}→${r.max} <span style="opacity:0.6">(Δ${r.range})</span>
+        </div>
+      </div>`).join('')}` : ''}
+  `);
+}
+
+// ── 7. GROUP: correlation matrix ──
+function buildCorrelationMatrix() {
+  const members = Object.values(allUsers).filter(isValidUser);
+  if (members.length < 2) return '';
+
+  // Pearson correlation between two users' album averages
+  function pearson(u1, u2) {
+    const shared = RELEASES.filter(rel => {
+      return userReleaseAvg(u1,rel) && userReleaseAvg(u2,rel);
+    });
+    if (shared.length < 3) return null;
+    const v1 = shared.map(r => userReleaseAvg(u1,r).avg);
+    const v2 = shared.map(r => userReleaseAvg(u2,r).avg);
+    const m1 = v1.reduce((a,b)=>a+b)/v1.length;
+    const m2 = v2.reduce((a,b)=>a+b)/v2.length;
+    const num = v1.reduce((s,v,i)=>s+(v-m1)*(v2[i]-m2),0);
+    const den = Math.sqrt(v1.reduce((s,v)=>s+(v-m1)**2,0) * v2.reduce((s,v)=>s+(v-m2)**2,0));
+    return den===0 ? null : num/den;
+  }
+
+  const n = members.length;
+  const cellSz = Math.min(70, Math.floor(560/n));
+  const padL = 70, padT = 70;
+  const svgW = padL + n*cellSz + 10;
+  const svgH = padT + n*cellSz + 10;
+
+  const corrColor = r => {
+    if (r === null) return 'rgba(255,255,255,0.05)';
+    if (r >= 0.9) return '#1a6b3a';
+    if (r >= 0.7) return '#2a8a4e';
+    if (r >= 0.5) return '#3aaa66';
+    if (r >= 0.3) return '#6abf88';
+    if (r >= 0) return '#9ad4aa';
+    if (r >= -0.3) return '#d4a09a';
+    return '#c0392b';
+  };
+
+  let cells = '', rowLabels = '', colLabels = '';
+  for (let i = 0; i < n; i++) {
+    colLabels += `<text x="${padL + i*cellSz + cellSz/2}" y="${padT-8}" text-anchor="middle"
+      font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,0.5)"
+      transform="rotate(-35,${padL+i*cellSz+cellSz/2},${padT-8})">${members[i].name}</text>`;
+    rowLabels += `<text x="${padL-6}" y="${padT+i*cellSz+cellSz/2}" text-anchor="end" dominant-baseline="central"
+      font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,0.5)">${members[i].name}</text>`;
+    for (let j = 0; j < n; j++) {
+      const r = i===j ? 1 : pearson(members[i], members[j]);
+      const col = i===j ? 'rgba(255,255,255,0.12)' : corrColor(r);
+      const label = r===null ? '?' : i===j ? '—' : r.toFixed(2);
+      const tooltip = i===j ? members[i].name : `${members[i].name} × ${members[j].name}: r=${r===null?'N/A':r.toFixed(3)}`;
+      cells += `<rect x="${padL+j*cellSz+1}" y="${padT+i*cellSz+1}" width="${cellSz-2}" height="${cellSz-2}" rx="1"
+        fill="${col}" onmouseenter="showTT(event,'${tooltip}')" onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default"/>
+        <text x="${padL+j*cellSz+cellSz/2}" y="${padT+i*cellSz+cellSz/2}" text-anchor="middle" dominant-baseline="central"
+          font-family="'Syne Mono',monospace" font-size="${cellSz>50?'9':'7'}" fill="rgba(255,255,255,0.7)">${label}</text>`;
+    }
+  }
+
+  return gCard(`
+    ${h3('Taste correlation matrix')}
+    <div class="viz-sub">Pearson correlation of album ratings between each pair of members. 1.0 = perfect agreement · 0 = no relationship · Negative = opposite tastes.</div>
+    <div style="overflow-x:auto">
+      <svg width="100%" viewBox="0 0 ${svgW} ${svgH}" style="min-width:${Math.min(svgW,300)}px">
+        ${colLabels}${rowLabels}${cells}
+      </svg>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0.75rem;align-items:center">
+      <span style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim)">Correlation:</span>
+      ${[['#1a6b3a','≥0.9'],['#2a8a4e','≥0.7'],['#3aaa66','≥0.5'],['#9ad4aa','≥0'],['#d4a09a','<0'],['#c0392b','<-0.3']].map(([c,l])=>
+        `<div style="display:flex;align-items:center;gap:3px;font-family:'Syne Mono',monospace;font-size:0.58rem;color:var(--text-dim)">
+          <div style="width:12px;height:12px;border-radius:1px;background:${c}"></div>${l}
+        </div>`).join('')}
+    </div>
+  `);
+}
+
+// ── 8. GROUP: swing voters & unanimously loved/hated ──
+function buildGroupInsightCards() {
+  const members = Object.values(allUsers).filter(isValidUser);
+  if (members.length < 2) return '';
+
+  // Swing voter: avg absolute deviation from group mean across all shared albums
+  const swings = members.map(u => {
+    const diffs = RELEASES.map(rel => {
+      const myRes = userReleaseAvg(u, rel);
+      if (!myRes) return null;
+      const others = members.filter(m=>m.key!==u.key).map(m=>{const r=userReleaseAvg(m,rel);return r?r.avg:null;}).filter(v=>v!==null);
+      if (!others.length) return null;
+      const groupAvg = others.reduce((a,b)=>a+b)/others.length;
+      return Math.abs(myRes.avg - groupAvg);
+    }).filter(v=>v!==null);
+    const avgDev = diffs.length ? diffs.reduce((a,b)=>a+b)/diffs.length : null;
+    return { user: u, avgDev };
+  }).filter(v=>v.avgDev!==null).sort((a,b)=>b.avgDev-a.avgDev);
+
+  // Unanimously loved/hated: songs where everyone rated within 1 point of each other
+  const songConsensus = [];
+  RELEASES.forEach(rel => {
+    rel.songs.forEach((song,i) => {
+      const ratings = members.map(u=>u.ratings[ratingKey(rel.id,i)]||0).filter(r=>r>0);
+      if (ratings.length < members.length) return; // needs all members
+      const max = Math.max(...ratings), min = Math.min(...ratings);
+      const mean = ratings.reduce((a,b)=>a+b)/ratings.length;
+      songConsensus.push({ rel, song, ratings, mean, spread: max-min });
+    });
+  });
+  const loved  = songConsensus.filter(s=>s.spread<=1&&s.mean>=7).sort((a,b)=>b.mean-a.mean).slice(0,5);
+  const hated  = songConsensus.filter(s=>s.spread<=1&&s.mean<=4).sort((a,b)=>a.mean-b.mean).slice(0,5);
+  const wildly = songConsensus.filter(s=>s.spread>=4).sort((a,b)=>b.spread-a.spread).slice(0,5);
+
+  return `
+  ${gCard(`
+    ${h3('Swing voters')}
+    <div class="viz-sub">Ranked by average deviation from the group — who's most often the outlier?</div>
+    ${swings.map((s,i)=>`
+      <div class="rank-row">
+        <div class="rank-num">${i+1}</div>
+        <div class="rank-name">${s.user.name}</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.78rem;color:${s.avgDev>1.5?'var(--red)':s.avgDev<0.5?'var(--blue)':'var(--text-mid)'}">
+          Δ${s.avgDev.toFixed(2)} avg deviation
+        </div>
+      </div>`).join('')}
+  `)}
+  ${loved.length ? gCard(`
+    ${h3('Unanimous favourites')}
+    <div class="viz-sub">Songs where all members rated within 1 point of each other AND avg ≥ 7.</div>
+    ${loved.map(s=>`
+      <div class="rank-row">
+        <div><div class="rank-name">${s.song}</div><div class="rank-sub">${s.rel.title} · Ratings: ${s.ratings.join(', ')}</div></div>
+        <div class="rank-score">${s.mean.toFixed(1)}</div>
+      </div>`).join('')}
+  `) : ''}
+  ${hated.length ? gCard(`
+    ${h3('Unanimous duds')}
+    <div class="viz-sub">Songs where all members rated within 1 point AND avg ≤ 4.</div>
+    ${hated.map(s=>`
+      <div class="rank-row">
+        <div><div class="rank-name">${s.song}</div><div class="rank-sub">${s.rel.title} · Ratings: ${s.ratings.join(', ')}</div></div>
+        <div class="rank-score" style="color:var(--red)">${s.mean.toFixed(1)}</div>
+      </div>`).join('')}
+  `) : ''}
+  ${wildly.length ? gCard(`
+    ${h3('Wildly divisive songs')}
+    <div class="viz-sub">Songs with the widest spread — at least 4 points between lowest and highest rating.</div>
+    ${wildly.map(s=>`
+      <div class="rank-row">
+        <div><div class="rank-name">${s.song}</div><div class="rank-sub">${s.rel.title} · Ratings: ${s.ratings.join(', ')}</div></div>
+        <div class="rank-score" style="color:var(--red)">Δ${s.spread}</div>
+      </div>`).join('')}
+  `) : ''}`;
+}
+
+
+function copyShare() {
+  const url = window.location.href.split('?')[0] + '?user=' + encodeURIComponent(currentUser.name);
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied!'));
+}
+
+// =====================
+// TOAST
+// =====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+
+</script>
+</body>
+</html>
