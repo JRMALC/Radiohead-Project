@@ -1442,25 +1442,41 @@ async function sheetsRequest(payload) {
 
 async function syncFromSheets() {
   const data = await sheetsRequest({ action: 'getAll' });
-  if (!data || !data.users) return;
-  data.users.forEach(u => {
-    const name = (u.name || '').trim();
-    if (name.length < 2 || BLOCKED_NAMES.has(name.toLowerCase())) return;
-    const key = name.toLowerCase();
-    if (!allUsers[key]) {
-      allUsers[key] = { name: name, key, ratings: u.ratings || {}, joined: u.joined || new Date().toISOString() };
-    } else {
-      Object.assign(allUsers[key].ratings, u.ratings || {});
+
+  // Sheet is single source of truth — even if it returns empty/no users,
+  // we still replace allUsers with whatever the sheet says.
+  // Only skip if the request itself failed (null response).
+  if (data === null) return;
+
+  const sheetUsers = {};
+  if (data.users) {
+    data.users.forEach(u => {
+      const name = (u.name || '').trim();
+      if (name.length < 2 || BLOCKED_NAMES.has(name.toLowerCase())) return;
+      const key = name.toLowerCase();
+      sheetUsers[key] = {
+        name,
+        key,
+        ratings: u.ratings || {},
+        joined: u.joined || new Date().toISOString()
+      };
+    });
+  }
+
+  // Preserve current user's unsaved in-progress ratings to avoid
+  // a race condition where a just-saved rating gets wiped by a sync
+  // that hasn't received the push yet
+  if (currentUser) {
+    const key = currentUser.key;
+    if (sheetUsers[key]) {
+      Object.assign(sheetUsers[key].ratings, currentUser.ratings);
+    } else if (Object.keys(currentUser.ratings || {}).length > 0) {
+      sheetUsers[key] = { ...currentUser };
     }
-  });
-  // Purge any ghost users (no ratings, not current user)
-  Object.keys(allUsers).forEach(key => {
-    const u = allUsers[key];
-    if (key === currentUser?.key) return;
-    if (!u.name || u.name.trim().length < 2 || Object.keys(u.ratings || {}).length === 0) {
-      delete allUsers[key];
-    }
-  });
+  }
+
+  // Fully replace allUsers with sheet data
+  allUsers = sheetUsers;
   cleanGhostUsers();
   saveLocal();
 }
@@ -1476,14 +1492,22 @@ async function pushRating(releaseId, songIdx, rating) {
 async function startSession() {
   const name = document.getElementById('nameInput').value.trim();
   if (!name) { showToast('Enter your name first'); return; }
-  loadLocal();
-  currentUser = getOrCreateUser(name);
-  saveLocal();
+
+  // Clear any stale localStorage before syncing — sheet is source of truth
+  lsSet('rh_users', JSON.stringify({}));
+  allUsers = {};
+
+  // Create a minimal current user so enterApp works
+  currentUser = { name: name.trim(), key: name.toLowerCase().trim(), ratings: {}, joined: new Date().toISOString() };
+
   enterApp();
+
   if (SCRIPT_URL) {
     showToast('Syncing…');
     await syncFromSheets();
-    currentUser = allUsers[currentUser.key];
+    // Restore currentUser from synced data (may have ratings from sheet)
+    currentUser = allUsers[currentUser.key] || currentUser;
+    saveLocal();
     showToast('Synced ✓');
     renderDiscography();
   }
@@ -1501,22 +1525,25 @@ function enterApp() {
 }
 
 window.addEventListener('load', () => {
-  loadLocal();
-  cleanGhostUsers();
   const params = new URLSearchParams(window.location.search);
   const user = params.get('user');
   if (user) {
-    // Auto-login from share URL — bypass landing page entirely
-    const name = decodeURIComponent(user);
-    currentUser = allUsers[name.toLowerCase().trim()] || getOrCreateUser(name);
-    saveLocal();
+    const name = decodeURIComponent(user).trim();
+    // Clear stale localStorage — sheet is source of truth
+    lsSet('rh_users', JSON.stringify({}));
+    allUsers = {};
+    currentUser = { name, key: name.toLowerCase(), ratings: {}, joined: new Date().toISOString() };
     enterApp();
     if (SCRIPT_URL) {
       syncFromSheets().then(() => {
         currentUser = allUsers[currentUser.key] || currentUser;
+        saveLocal();
         renderDiscography();
       });
     }
+  } else {
+    loadLocal();
+    cleanGhostUsers();
   }
 });
 
