@@ -713,7 +713,7 @@
 
   /* Violin / box */
   .violin-wrap { overflow-x: auto; }
-  .violin-svg { overflow: visible; }
+  .violin-svg { overflow: hidden; display: block; }
 
   /* Tooltip */
   .viz-tooltip {
@@ -2855,8 +2855,8 @@ function buildViolinPlot(user, type) {
 
   if (!data.length) return '';
 
-  const bw = 36, gap = 8, padL = 28, padT = 20, padB = 30;
-  const h = 220, plotH = h - padT - padB;
+  const bw = 44, gap = 10, padL = 28, padT = 20, padB = 36;
+  const h = 200, plotH = h - padT - padB;
   const totalW = padL + data.length*(bw+gap) + 20;
   const toY = v => padT + ((10-v)/9)*plotH;
 
@@ -2877,23 +2877,24 @@ function buildViolinPlot(user, type) {
       .replace('KID A MNESIA','KAM').replace('OK Computer OKNOTOK 1997–2017','OKNOTOK');
     const yQ1=toY(d.q1), yQ3=toY(d.q3), yMed=toY(d.median), yMean=toY(d.mean), yMin=toY(d.min), yMax=toY(d.max);
 
-    // Whiskers, box, median, mean dot
     return `<g onmouseenter="showTT(event,'<b>${d.alb.title}</b><br>Median: ${d.median} · Mean: ${d.mean.toFixed(1)}<br>Q1: ${d.q1} · Q3: ${d.q3}<br>Range: ${d.min}–${d.max}<br>${d.vals.length} ratings')" onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default">
       <line x1="${cx}" y1="${yMax}" x2="${cx}" y2="${yMin}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <line x1="${cx-5}" y1="${yMax}" x2="${cx+5}" y2="${yMax}" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
-      <line x1="${cx-5}" y1="${yMin}" x2="${cx+5}" y2="${yMin}" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
-      <rect x="${x+4}" y="${Math.min(yQ1,yQ3)}" width="${bw-8}" height="${Math.abs(yQ3-yQ1)||2}" rx="1" fill="${accentCol}30" stroke="${accentCol}80" stroke-width="1"/>
-      <line x1="${x+4}" y1="${yMed}" x2="${x+bw-4}" y2="${yMed}" stroke="${accentCol}" stroke-width="2"/>
-      <circle cx="${cx}" cy="${yMean}" r="2.5" fill="rgba(255,255,255,0.6)"/>
-      <text x="${cx}" y="${padT+plotH+14}" text-anchor="middle" font-family="'Syne Mono',monospace" font-size="7" fill="rgba(232,232,232,0.35)">${shortName}</text>
+      <line x1="${cx-6}" y1="${yMax}" x2="${cx+6}" y2="${yMax}" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+      <line x1="${cx-6}" y1="${yMin}" x2="${cx+6}" y2="${yMin}" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+      <rect x="${x+6}" y="${Math.min(yQ1,yQ3)}" width="${bw-12}" height="${Math.abs(yQ3-yQ1)||2}" rx="1" fill="${accentCol}30" stroke="${accentCol}80" stroke-width="1"/>
+      <line x1="${x+6}" y1="${yMed}" x2="${x+bw-6}" y2="${yMed}" stroke="${accentCol}" stroke-width="2.5"/>
+      <circle cx="${cx}" cy="${yMean}" r="3" fill="rgba(255,255,255,0.6)"/>
+      <text x="${cx}" y="${padT+plotH+14}" text-anchor="middle" font-family="'Syne Mono',monospace" font-size="7.5" fill="rgba(232,232,232,0.4)">${shortName}</text>
     </g>`;
   });
 
+
   return `<div class="viz-card ${type}-card">
     <h3><span class="h3-dot"></span>Box plot — rating spread per album</h3>
-    <div class="viz-sub">Box = Q1→Q3 · ${`<span style="color:${type==='personal'?'#c0392b':'#7eb8ff'}">─</span>`} = median · ● = mean · Whiskers = min/max · Hover for stats.</div>
-    <div style="overflow-x:auto">
-      <svg width="100%" viewBox="0 0 ${totalW} ${h}" class="violin-svg" style="min-width:300px">
+    <div class="viz-sub">Box = Q1→Q3 · <span style="color:${type==='personal'?'#c0392b':'#7eb8ff'}">─</span> = median · ● = mean · Whiskers = min/max · Hover for stats.</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <svg viewBox="0 0 ${totalW} ${h}" class="violin-svg"
+        style="display:block;height:${h}px;width:${totalW}px;min-width:100%">
         ${grid.join('')}
         ${boxes.join('')}
       </svg>
