@@ -1965,7 +1965,7 @@ function miniDistBars(relDist) {
   const mx = Math.max(...relDist, 1);
   return relDist.map((c, i) => {
     const h = Math.round((c / mx) * 28);
-    const col = (i+1) >= 8 ? 'var(--accent)' : (i+1) >= 5 ? 'var(--text-mid)' : 'var(--red)';
+    const col = ratingColor(i + 1);
     return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1">
       <div style="width:100%;height:${Math.max(h, c ? 3 : 0)}px;background:${c ? col : 'var(--mid)'};border-radius:1px"></div>
       <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-dim)">${i+1}</div>
@@ -2077,25 +2077,25 @@ function renderUserStats(container, user, isMe) {
       ${h3('How you rate')}
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:1rem">
         ${[
-          {label:'Loved',sub:'8–10',count:loved,col:'var(--accent)'},
-          {label:'Liked',sub:'6–7',count:liked,col:'var(--blue)'},
-          {label:'Meh',sub:'4–5',count:meh,col:'var(--text-mid)'},
-          {label:'Disliked',sub:'1–3',count:disliked,col:'var(--red)'},
+          {label:'Loved',sub:'8–10',count:loved,score:9},
+          {label:'Liked',sub:'6–7',count:liked,score:6.5},
+          {label:'Meh',sub:'4–5',count:meh,score:4.5},
+          {label:'Disliked',sub:'1–3',count:disliked,score:2},
         ].map(g=>`
           <div style="background:var(--mid);border-radius:2px;padding:0.85rem 0.4rem;text-align:center">
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${g.col}">${g.count}</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${ratingColor(g.score)}">${g.count}</div>
             <div style="font-size:0.7rem;font-weight:600;color:var(--text-mid);margin-top:0.1rem">${g.label}</div>
             <div style="font-family:'Syne Mono',monospace;font-size:0.58rem;color:var(--text-dim)">${g.sub}</div>
           </div>`).join('')}
       </div>
       <div style="display:flex;height:6px;border-radius:2px;overflow:hidden;gap:1px">
-        ${loved>0?`<div style="flex:${loved};background:var(--accent)"></div>`:''}
-        ${liked>0?`<div style="flex:${liked};background:var(--blue)"></div>`:''}
-        ${meh>0?`<div style="flex:${meh};background:var(--text-dim)"></div>`:''}
-        ${disliked>0?`<div style="flex:${disliked};background:var(--red)"></div>`:''}
+        ${loved>0?`<div style="flex:${loved};background:${ratingColor(9)}"></div>`:''}
+        ${liked>0?`<div style="flex:${liked};background:${ratingColor(6.5)}"></div>`:''}
+        ${meh>0?`<div style="flex:${meh};background:${ratingColor(4.5)}"></div>`:''}
+        ${disliked>0?`<div style="flex:${disliked};background:${ratingColor(2)}"></div>`:''}
       </div>
       ${tens.length>0?`<div style="font-family:'Syne Mono',monospace;font-size:0.68rem;color:var(--text-dim);margin-top:0.85rem">
-        Perfect 10s → ${tens.map(x=>`<span style="color:var(--accent)">${x.song}</span>`).join(', ')}
+        Perfect 10s → ${tens.map(x=>`<span style="color:${ratingColor(10)}">${x.song}</span>`).join(', ')}
       </div>`:''}
     `):''}
 
@@ -2144,11 +2144,11 @@ function renderUserStats(container, user, isMe) {
               <div class="rank-name">${x.rel.title}</div>
               <div class="rank-sub">${x.rel.year} · ${x.count}/${x.rel.songs.length} songs</div>
             </div>
-            <div class="rank-score">${x.avg.toFixed(2)}</div>
+            <div class="rank-score" style="color:${ratingColor(x.avg)}">${x.avg.toFixed(2)}</div>
           </div>
           <div style="padding-left:44px">
             <div style="height:3px;background:var(--mid);border-radius:2px;overflow:hidden">
-              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:var(--accent);border-radius:2px"></div>
+              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:${ratingColor(x.avg)};border-radius:2px"></div>
             </div>
           </div>
         </div>`).join('')}
@@ -2159,7 +2159,7 @@ function renderUserStats(container, user, isMe) {
       ${h3('Overall rating distribution')}
       ${dist.map((count,i)=>{
         const pctBar=Math.round((count/maxDist)*100);
-        const col=(i+1)>=8?'var(--accent)':(i+1)>=5?'var(--text-mid)':'var(--red)';
+        const col=ratingColor(i+1);
         return `<div class="dist-bar-row">
           <div class="dist-bar-label" style="color:${col}">${i+1}</div>
           <div class="dist-bar-track"><div class="dist-bar-fill" style="width:${pctBar}%;background:${col}"></div></div>
@@ -2176,7 +2176,7 @@ function renderUserStats(container, user, isMe) {
         <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem">
             <div style="font-weight:600;font-size:0.82rem">${x.rel.title}</div>
-            <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--accent)">${x.avg.toFixed(2)} avg · σ ${x.stdDev.toFixed(1)}</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:${ratingColor(x.avg)}">${x.avg.toFixed(2)} avg · σ ${x.stdDev.toFixed(1)}</div>
           </div>
           <div style="display:flex;gap:3px;align-items:flex-end;height:36px">${miniDistBars(x.relDist)}</div>
         </div>`).join('')}
@@ -2193,10 +2193,10 @@ function renderUserStats(container, user, isMe) {
           <div style="flex:1">
             <div style="font-size:0.78rem;font-weight:${isBest?'700':'400'};color:${isBest?'var(--text)':'var(--text-mid)'};margin-bottom:0.2rem">${x.rel.title}</div>
             <div style="height:4px;background:var(--mid);border-radius:2px;overflow:hidden">
-              <div style="height:4px;width:${Math.round((x.avg/10)*100)}%;background:${isBest?'var(--accent)':'var(--text-dim)'};border-radius:2px"></div>
+              <div style="height:4px;width:${Math.round((x.avg/10)*100)}%;background:${ratingColor(x.avg)};border-radius:2px"></div>
             </div>
           </div>
-          <div style="font-family:'Syne Mono',monospace;font-size:0.7rem;color:${isBest?'var(--accent)':'var(--text-dim)'};width:32px;text-align:right">${x.avg.toFixed(1)}</div>
+          <div style="font-family:'Syne Mono',monospace;font-size:0.7rem;color:${ratingColor(x.avg)};width:32px;text-align:right">${x.avg.toFixed(1)}</div>
         </div>`;
       }).join('')}
     `):''}
@@ -2210,7 +2210,7 @@ function renderUserStats(container, user, isMe) {
         <div class="rank-row">
           <div class="rank-num">${i+1}</div>
           <div><div class="rank-name">${x.song}</div><div class="rank-sub">${x.release.title} · ${x.release.year}</div></div>
-          <div class="rank-score">${x.rating}/10</div>
+          <div class="rank-score" style="color:${ratingColor(x.rating)}">${x.rating}/10</div>
         </div>`).join('')}
     `):''}
 
@@ -2219,9 +2219,9 @@ function renderUserStats(container, user, isMe) {
       ${h3('Bottom 10 songs')}
       ${bottomSongs.map((x,i)=>`
         <div class="rank-row">
-          <div class="rank-num" style="color:var(--red)">${i+1}</div>
+          <div class="rank-num" style="color:${ratingColor(x.rating)}">${i+1}</div>
           <div><div class="rank-name">${x.song}</div><div class="rank-sub">${x.release.title} · ${x.release.year}</div></div>
-          <div class="rank-score" style="color:var(--red)">${x.rating}/10</div>
+          <div class="rank-score" style="color:${ratingColor(x.rating)}">${x.rating}/10</div>
         </div>`).join('')}
     `):''}
 
@@ -2373,11 +2373,11 @@ function renderGroupStats(container) {
               <div class="rank-name">${x.rel.title}</div>
               <div class="rank-sub">${x.rel.year} · ${x.memberCount} member${x.memberCount!==1?'s':''} · σ ${x.sd.toFixed(2)}</div>
             </div>
-            <div class="rank-score" style="color:var(--blue)">${x.avg.toFixed(2)}</div>
+            <div class="rank-score" style="color:${ratingColor(x.avg)}">${x.avg.toFixed(2)}</div>
           </div>
           <div style="padding-left:44px">
             <div style="height:3px;background:var(--mid);border-radius:2px;overflow:hidden">
-              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:var(--blue);border-radius:2px"></div>
+              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:${ratingColor(x.avg)};border-radius:2px"></div>
             </div>
           </div>
         </div>`).join('')}
@@ -2388,7 +2388,7 @@ function renderGroupStats(container) {
       ${h3('Group rating distribution')}
       ${gDist.map((count,i)=>{
         const pctBar=Math.round((count/gMaxDist)*100);
-        const col=(i+1)>=8?'var(--blue)':(i+1)>=5?'var(--text-mid)':'var(--red)';
+        const col=ratingColor(i+1);
         return `<div class="dist-bar-row">
           <div class="dist-bar-label" style="color:${col}">${i+1}</div>
           <div class="dist-bar-track"><div class="dist-bar-fill" style="width:${pctBar}%;background:${col}"></div></div>
@@ -2405,7 +2405,7 @@ function renderGroupStats(container) {
         <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem">
             <div style="font-weight:600;font-size:0.82rem">${x.rel.title}</div>
-            <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--blue)">${x.avg.toFixed(2)} avg · σ ${x.sd.toFixed(1)}</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:${ratingColor(x.avg)}">${x.avg.toFixed(2)} avg · σ ${x.sd.toFixed(1)}</div>
           </div>
           <div style="display:flex;gap:3px;align-items:flex-end;height:36px">${miniDistBars(x.relDist)}</div>
         </div>`).join('')}
@@ -2722,13 +2722,11 @@ function buildTimeline(user, type) {
         <text x="${labelW-4}" y="${y+barH/2}" text-anchor="end" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,0.35)">${a.year}</text>`;
     }
     const w = Math.round((res.avg/maxAvg)*barAreaW);
-    const isBest = res.avg === bestAvg;
-    const col = isBest ? accentCol : ratingColor(Math.round(res.avg));
-    const shortName = a.title.replace('OK Computer OKNOTOK 1997–2017','OKNOTOK');
+    const col = ratingColor(res.avg);
     return `<g onmouseenter="showTT(event,'<b>${a.title}</b><br>${a.year}<br>${res.avg.toFixed(2)}/10 avg<br>${res.count}/${a.songs.length} songs')" onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default">
-      <text x="${labelW-4}" y="${y+barH/2}" text-anchor="end" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,${isBest?'0.9':'0.45'})">${a.year}</text>
-      <rect x="${labelW}" y="${y}" width="${w}" height="${barH}" rx="1" fill="${col}" opacity="${isBest?1:0.75}"/>
-      <text x="${labelW+w+6}" y="${y+barH/2}" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9.5" fill="${isBest?accentCol:'rgba(232,232,232,0.55)'}" font-weight="${isBest?'700':'400'}">${res.avg.toFixed(1)}</text>
+      <text x="${labelW-4}" y="${y+barH/2}" text-anchor="end" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,0.5)">${a.year}</text>
+      <rect x="${labelW}" y="${y}" width="${w}" height="${barH}" rx="1" fill="${col}" opacity="0.9"/>
+      <text x="${labelW+w+6}" y="${y+barH/2}" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="9.5" fill="${col}" font-weight="600">${res.avg.toFixed(1)}</text>
     </g>`;
   });
 
@@ -2958,7 +2956,7 @@ function buildPersonalInsights(user) {
       <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
         <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);width:16px;text-align:right">${i+1}</div>
         <div style="flex:1;font-size:0.82rem">${r.rel.title}</div>
-        <div style="font-family:'Syne Mono',monospace;font-size:0.72rem;color:${r.range>=5?'var(--red)':'var(--text-mid)'}">
+        <div class="rank-score" style="color:${ratingColor((r.min+r.max)/2)}">
           ${r.min}→${r.max} <span style="opacity:0.6">(Δ${r.range})</span>
         </div>
       </div>`).join('')}` : ''}
