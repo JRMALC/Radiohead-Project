@@ -2240,7 +2240,7 @@ function renderUserStats(container, user, isMe) {
     <div class="stats-card">
       <h3><span class="h3-dot" style="background:var(--text-dim)"></span>Invite a friend</h3>
       <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.75rem;line-height:1.6">Share this link so friends can join and appear in comparisons.</p>
-      <div class="share-url" onclick="copyShare()">${window.location.href.split('?')[0]}?user=${encodeURIComponent(currentUser.name)}</div>
+      <div class="share-url" onclick="copyShareBase()">${window.location.href.split('?')[0]}</div>
       <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);margin-top:0.4rem">↑ Click to copy</div>
     </div>`:''}
   `;
@@ -2509,7 +2509,7 @@ function renderGroupStats(container) {
     <div class="stats-card group-card">
       <h3><span class="h3-dot"></span>Invite a friend</h3>
       <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.75rem;line-height:1.6">Share ${currentUser.name}'s link to grow the club.</p>
-      <div class="share-url" onclick="copyShare()">${window.location.href.split('?')[0]}?user=${encodeURIComponent(currentUser.name)}</div>
+      <div class="share-url" onclick="copyShareBase()">${window.location.href.split('?')[0]}</div>
       <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-dim);margin-top:0.4rem">↑ Click to copy</div>
     </div>
   `;
@@ -3116,6 +3116,11 @@ function buildGroupInsightCards() {
 
 function copyShare() {
   const url = window.location.href.split('?')[0] + '?user=' + encodeURIComponent(currentUser.name);
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied!'));
+}
+
+function copyShareBase() {
+  const url = window.location.href.split('?')[0];
   navigator.clipboard.writeText(url).then(() => showToast('Link copied!'));
 }
 
