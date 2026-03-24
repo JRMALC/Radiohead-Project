@@ -1673,13 +1673,9 @@ function renderDiscography() {
   const container = document.getElementById('discContent');
   const releases = filteredReleases();
 
-  // Group by type
   const albums = releases.filter(r => r.type === 'album');
-  const eps = releases.filter(r => r.type === 'ep');
-  const singles = releases.filter(r => r.type === 'single');
-  const live = releases.filter(r => r.type === 'live');
-
-  let html = '';
+  const eps    = releases.filter(r => r.type === 'ep');
+  const live   = releases.filter(r => r.type === 'live');
 
   function renderGroup(label, list) {
     if (!list.length) return '';
@@ -1689,19 +1685,16 @@ function renderDiscography() {
     return out;
   }
 
-  html += renderGroup('Studio Albums & Compilations', albums);
-  html += renderGroup('EPs', eps);
-  html += renderGroup('Singles', singles);
-  html += renderGroup('Live Albums', live);
+  let html = '';
+  html += renderGroup('Studio Albums', albums);
+  html += renderGroup('EPs & Singles', eps);
+  html += renderGroup('Live', live);
 
   if (!releases.length) {
     html = '<div class="empty-state">No releases match this filter.</div>';
   }
 
   container.innerHTML = html;
-
-  // Attach star rows for all visible songs in open cards
-  // (they're built dynamically when cards expand)
   updateDiscSubline();
 }
 
@@ -1970,7 +1963,7 @@ function renderUserStats(container, user, isMe) {
   allRatings.forEach(x => { if (x.rating>=1&&x.rating<=10) dist[x.rating-1]++; });
   const maxDist = Math.max(...dist, 1);
 
-  // Per-release
+  // Per-release — split by type
   const perRelease = RELEASES.map(rel => {
     const res = userReleaseAvg(user, rel);
     if (!res) return null;
@@ -1979,6 +1972,10 @@ function renderUserStats(container, user, isMe) {
     const sd = stdDevOf(ratings);
     return { rel, avg: res.avg, count: res.count, relDist, stdDev: sd };
   }).filter(Boolean).sort((a,b)=>b.avg-a.avg);
+
+  const perAlbums = perRelease.filter(x => x.rel.type === 'album');
+  const perEPs    = perRelease.filter(x => x.rel.type === 'ep');
+  const perLive   = perRelease.filter(x => x.rel.type === 'live');
 
   const sortedSongs = [...allRatings].sort((a,b)=>b.rating-a.rating);
   const topSongs    = sortedSongs.slice(0,10);
@@ -1994,11 +1991,11 @@ function renderUserStats(container, user, isMe) {
     ? (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2
     : sorted[Math.floor(sorted.length/2)]) : null;
 
-  const eraBest  = perRelease[0]||null;
-  const eraWorst = perRelease[perRelease.length-1]||null;
+  const eraBest  = perAlbums[0]||null;
+  const eraWorst = perAlbums[perAlbums.length-1]||null;
 
-  const consistent = [...perRelease].filter(x=>x.count>=3).sort((a,b)=>a.stdDev-b.stdDev);
-  const varied     = [...perRelease].filter(x=>x.count>=3).sort((a,b)=>b.stdDev-a.stdDev);
+  const consistent = [...perAlbums].filter(x=>x.count>=3).sort((a,b)=>a.stdDev-b.stdDev);
+  const varied     = [...perAlbums].filter(x=>x.count>=3).sort((a,b)=>b.stdDev-a.stdDev);
 
   const studioByYear = RELEASES
     .filter(r=>r.type==='album')
@@ -2099,10 +2096,52 @@ function renderUserStats(container, user, isMe) {
 
     ${sectionBand('Albums', 'personal')}
 
-    <!-- Albums ranked -->
-    ${perRelease.length?pCard(`
-      ${h3('Albums by avg rating')}
-      ${perRelease.map((x,i)=>`
+    <!-- Studio albums ranked -->
+    ${perAlbums.length?pCard(`
+      ${h3('Studio albums by avg rating')}
+      ${perAlbums.map((x,i)=>`
+        <div class="rank-row" style="flex-direction:column;align-items:stretch;gap:0.25rem;padding:0.65rem 0">
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <div class="rank-num">${i+1}</div>
+            <div style="flex:1">
+              <div class="rank-name">${x.rel.title}</div>
+              <div class="rank-sub">${x.rel.year} · ${x.count}/${x.rel.songs.length} songs</div>
+            </div>
+            <div class="rank-score" style="color:${ratingColor(x.avg)}">${x.avg.toFixed(2)}</div>
+          </div>
+          <div style="padding-left:44px">
+            <div style="height:3px;background:var(--mid);border-radius:2px;overflow:hidden">
+              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:${ratingColor(x.avg)};border-radius:2px"></div>
+            </div>
+          </div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- EPs ranked -->
+    ${perEPs.length?pCard(`
+      ${h3('EPs & singles by avg rating')}
+      ${perEPs.map((x,i)=>`
+        <div class="rank-row" style="flex-direction:column;align-items:stretch;gap:0.25rem;padding:0.65rem 0">
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <div class="rank-num">${i+1}</div>
+            <div style="flex:1">
+              <div class="rank-name">${x.rel.title}</div>
+              <div class="rank-sub">${x.rel.year} · ${x.count}/${x.rel.songs.length} songs</div>
+            </div>
+            <div class="rank-score" style="color:${ratingColor(x.avg)}">${x.avg.toFixed(2)}</div>
+          </div>
+          <div style="padding-left:44px">
+            <div style="height:3px;background:var(--mid);border-radius:2px;overflow:hidden">
+              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:${ratingColor(x.avg)};border-radius:2px"></div>
+            </div>
+          </div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Live ranked -->
+    ${perLive.length?pCard(`
+      ${h3('Live albums by avg rating')}
+      ${perLive.map((x,i)=>`
         <div class="rank-row" style="flex-direction:column;align-items:stretch;gap:0.25rem;padding:0.65rem 0">
           <div style="display:flex;align-items:center;gap:0.75rem">
             <div class="rank-num">${i+1}</div>
@@ -2134,11 +2173,25 @@ function renderUserStats(container, user, isMe) {
       }).join('')}
     `):''}
 
-    <!-- Per-album distributions -->
-    ${perRelease.length>=1?pCard(`
-      ${h3('Distribution by album')}
+    <!-- Distribution by album -->
+    ${perAlbums.length>=1?pCard(`
+      ${h3('Distribution by studio album')}
       <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1.25rem">Bar height = songs at each rating (1–10) · σ = standard deviation</div>
-      ${perRelease.map(x=>`
+      ${perAlbums.map(x=>`
+        <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem">
+            <div style="font-weight:600;font-size:0.82rem">${x.rel.title}</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:${ratingColor(x.avg)}">${x.avg.toFixed(2)} avg · σ ${x.stdDev.toFixed(1)}</div>
+          </div>
+          <div style="display:flex;gap:3px;align-items:flex-end;height:36px">${miniDistBars(x.relDist)}</div>
+        </div>`).join('')}
+    `):''}
+
+    <!-- Distribution by EP -->
+    ${perEPs.length>=1?pCard(`
+      ${h3('Distribution by EP & single')}
+      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1.25rem">Bar height = songs at each rating (1–10) · σ = standard deviation</div>
+      ${perEPs.map(x=>`
         <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem">
             <div style="font-weight:600;font-size:0.82rem">${x.rel.title}</div>
@@ -2354,55 +2407,66 @@ function renderGroupStats(container) {
 
     ${sectionBand('Group albums', 'group')}
 
-    <!-- Group album ranking -->
-    ${groupPerRelease.length?gCard(`
-      ${h3('Albums — group avg')}
-      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Averaged across all members who've rated that album</div>
-      ${groupPerRelease.map((x,i)=>`
-        <div class="rank-row" style="flex-direction:column;align-items:stretch;gap:0.25rem;padding:0.65rem 0">
-          <div style="display:flex;align-items:center;gap:0.75rem">
-            <div class="rank-num">${i+1}</div>
-            <div style="flex:1">
-              <div class="rank-name">${x.rel.title}</div>
-              <div class="rank-sub">${x.rel.year} · ${x.memberCount} member${x.memberCount!==1?'s':''} · σ ${x.sd.toFixed(2)}</div>
-            </div>
-            <div class="rank-score" style="color:${ratingColor(x.avg)}">${x.avg.toFixed(2)}</div>
-          </div>
-          <div style="padding-left:44px">
-            <div style="height:3px;background:var(--mid);border-radius:2px;overflow:hidden">
-              <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:${ratingColor(x.avg)};border-radius:2px"></div>
-            </div>
-          </div>
-        </div>`).join('')}
-    `):''}
+    ${(()=>{
+      const gAlbums = groupPerRelease.filter(x => x.rel.type === 'album');
+      const gEPs    = groupPerRelease.filter(x => x.rel.type === 'ep');
+      const gLive   = groupPerRelease.filter(x => x.rel.type === 'live');
 
-    <!-- Group distribution -->
-    ${groupAllRatings.length?gCard(`
-      ${h3('Group rating distribution')}
-      ${gDist.map((count,i)=>{
-        const pctBar=Math.round((count/gMaxDist)*100);
-        const col=ratingColor(i+1);
-        return `<div class="dist-bar-row">
-          <div class="dist-bar-label" style="color:${col}">${i+1}</div>
-          <div class="dist-bar-track"><div class="dist-bar-fill" style="width:${pctBar}%;background:${col}"></div></div>
-          <div class="dist-bar-count">${count>0?count:''}</div>
-        </div>`;
-      }).join('')}
-    `):''}
+      function groupRankCard(title, list) {
+        if (!list.length) return '';
+        return gCard(`
+          ${h3(title)}
+          <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Averaged across all members who've rated that release</div>
+          ${list.map((x,i)=>`
+            <div class="rank-row" style="flex-direction:column;align-items:stretch;gap:0.25rem;padding:0.65rem 0">
+              <div style="display:flex;align-items:center;gap:0.75rem">
+                <div class="rank-num">${i+1}</div>
+                <div style="flex:1">
+                  <div class="rank-name">${x.rel.title}</div>
+                  <div class="rank-sub">${x.rel.year} · ${x.memberCount} member${x.memberCount!==1?'s':''} · σ ${x.sd.toFixed(2)}</div>
+                </div>
+                <div class="rank-score" style="color:${ratingColor(x.avg)}">${x.avg.toFixed(2)}</div>
+              </div>
+              <div style="padding-left:44px">
+                <div style="height:3px;background:var(--mid);border-radius:2px;overflow:hidden">
+                  <div style="height:3px;width:${Math.round((x.avg/10)*100)}%;background:${ratingColor(x.avg)};border-radius:2px"></div>
+                </div>
+              </div>
+            </div>`).join('')}
+        `);
+      }
 
-    <!-- Per-album group distributions -->
-    ${groupPerRelease.length?gCard(`
-      ${h3('Group distribution by album')}
-      <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1.25rem">All members' ratings combined</div>
-      ${groupPerRelease.map(x=>`
-        <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem">
-            <div style="font-weight:600;font-size:0.82rem">${x.rel.title}</div>
-            <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:${ratingColor(x.avg)}">${x.avg.toFixed(2)} avg · σ ${x.sd.toFixed(1)}</div>
-          </div>
-          <div style="display:flex;gap:3px;align-items:flex-end;height:36px">${miniDistBars(x.relDist)}</div>
-        </div>`).join('')}
-    `):''}
+      function groupDistCard(title, list) {
+        if (!list.length) return '';
+        return gCard(`
+          ${h3(title)}
+          <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1.25rem">All members' ratings combined</div>
+          ${list.map(x=>`
+            <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem">
+                <div style="font-weight:600;font-size:0.82rem">${x.rel.title}</div>
+                <div style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:${ratingColor(x.avg)}">${x.avg.toFixed(2)} avg · σ ${x.sd.toFixed(1)}</div>
+              </div>
+              <div style="display:flex;gap:3px;align-items:flex-end;height:36px">${miniDistBars(x.relDist)}</div>
+            </div>`).join('')}
+        `);
+      }
+
+      return groupRankCard('Studio albums — group avg', gAlbums)
+           + groupRankCard('EPs & singles — group avg', gEPs)
+           + groupRankCard('Live albums — group avg', gLive)
+           + `<!-- Group distribution -->
+              ${groupAllRatings.length?gCard(`
+                ${h3('Group rating distribution')}
+                ${gDist.map((count,i)=>{
+                  const pctBar=Math.round((count/gMaxDist)*100);
+                  const col=ratingColor(i+1);
+                  return '<div class="dist-bar-row"><div class="dist-bar-label" style="color:'+col+'">'+  (i+1)+'</div><div class="dist-bar-track"><div class="dist-bar-fill" style="width:'+pctBar+'%;background:'+col+'"></div></div><div class="dist-bar-count">'+(count>0?count:'')+'</div></div>';
+                }).join('')}
+              `):''}
+              ${groupDistCard('Group distribution by studio album', gAlbums)}
+              ${groupDistCard('Group distribution by EP & single', gEPs)}`;
+    })()}
 
     ${sectionBand('Agreement & disagreement', 'group')}
 
