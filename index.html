@@ -2217,25 +2217,33 @@ function renderGroupStats(container) {
   const friends    = Object.values(allUsers).filter(u => u.key !== currentUser.key && isValidUser(u));
   const allMembers = Object.values(allUsers).filter(isValidUser);
 
-  // per-release group avg
+  // per-release group avg — computed from all individual song ratings (not avg-of-avgs)
   const groupPerRelease = RELEASES.map(rel => {
-    const memberAvgs = allMembers.map(u => {
-      const res = userReleaseAvg(u, rel);
-      return res ? res.avg : null;
-    }).filter(v => v !== null);
-    if (!memberAvgs.length) return null;
-    const avg = memberAvgs.reduce((a,b)=>a+b,0)/memberAvgs.length;
-    const sd  = stdDevOf(memberAvgs);
-    // dist across all users
+    // Collect every individual song rating from every member
+    const allSongRatings = [];
     const relDist = Array(10).fill(0);
     allMembers.forEach(u => {
       rel.songs.forEach((_,i) => {
         const r = u.ratings[ratingKey(rel.id,i)]||0;
-        if (r>=1&&r<=10) relDist[r-1]++;
+        if (r>=1&&r<=10) {
+          allSongRatings.push(r);
+          relDist[r-1]++;
+        }
       });
     });
-    const totalRatedSongs = relDist.reduce((a,b)=>a+b,0);
-    return { rel, avg, sd, memberAvgs, memberCount: memberAvgs.length, relDist, totalRatedSongs };
+    if (!allSongRatings.length) return null;
+
+    // True song-level average across all members
+    const avg = allSongRatings.reduce((a,b)=>a+b,0)/allSongRatings.length;
+
+    // For sd and memberCount: still useful to know per-member album avgs
+    const memberAvgs = allMembers.map(u => {
+      const res = userReleaseAvg(u, rel);
+      return res ? res.avg : null;
+    }).filter(v => v !== null);
+    const sd = stdDevOf(memberAvgs); // sd across members' album avgs — stays meaningful
+
+    return { rel, avg, sd, memberAvgs, memberCount: memberAvgs.length, relDist };
   }).filter(Boolean).sort((a,b)=>b.avg-a.avg);
 
   // overall group ratings
@@ -2450,26 +2458,27 @@ function renderGroupStats(container) {
         </div>`).join('')}
     `):''}
 
-    // Build synthetic group-average user for heatmap
+    ${(()=>{
+    // Build synthetic group-average user for heatmap (per-song avg across all members)
     const groupAvgUser = (() => {
       const ratings = {};
       RELEASES.forEach(rel => {
         rel.songs.forEach((_, i) => {
           const key = ratingKey(rel.id, i);
           const vals = allMembers.map(u => u.ratings[key]||0).filter(r=>r>0);
-          if (vals.length) ratings[key] = Math.round(vals.reduce((a,b)=>a+b)/vals.length * 10)/10;
+          if (vals.length) ratings[key] = vals.reduce((a,b)=>a+b)/vals.length;
         });
       });
       return { name: 'Group', key: '__group__', ratings };
     })();
-
+    return `
     ${sectionBand('Visualizations', 'group')}
-
     ${buildHeatMap(groupAvgUser, 'Group', 'group')}
     ${buildRadar(currentUser, 'Group', 'group', friends.length ? friends[0] : null)}
     ${buildViolinPlot(null, 'group')}
     ${buildCorrelationMatrix()}
-    ${buildGroupInsightCards()}
+    ${buildGroupInsightCards()}`;
+    })()}
 
     <hr class="section-divider">
     <div class="stats-card group-card">
@@ -2873,14 +2882,16 @@ function buildPersonalInsights(user) {
 
   const allMembers = Object.values(allUsers).filter(isValidUser);
   const groupRatings = [];
-  allMembers.forEach(u => {
-    RELEASES.forEach(rel => {
-      rel.songs.forEach((_,i) => {
-        const r = u.ratings[ratingKey(rel.id,i)]||0;
-        if (r>0) groupRatings.push(r);
+  allMembers
+    .filter(u => u.key !== user.key)  // exclude self from group comparison
+    .forEach(u => {
+      RELEASES.forEach(rel => {
+        rel.songs.forEach((_,i) => {
+          const r = u.ratings[ratingKey(rel.id,i)]||0;
+          if (r>0) groupRatings.push(r);
+        });
       });
     });
-  });
   const myMean = allRatings.reduce((s,x)=>s+x.rating,0)/allRatings.length;
   const groupMean = groupRatings.length ? groupRatings.reduce((a,b)=>a+b,0)/groupRatings.length : myMean;
   const diff = myMean - groupMean;
