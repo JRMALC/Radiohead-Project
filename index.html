@@ -1064,7 +1064,6 @@
         <button class="filter-chip active" onclick="setFilter('all', this)">All</button>
         <button class="filter-chip" onclick="setFilter('album', this)">Albums</button>
         <button class="filter-chip" onclick="setFilter('ep', this)">EPs</button>
-        <button class="filter-chip" onclick="setFilter('single', this)">Singles</button>
         <button class="filter-chip" onclick="setFilter('live', this)">Live</button>
         <button class="filter-chip" onclick="setFilter('unrated', this)">Unrated</button>
       </div>
@@ -1261,46 +1260,13 @@ const RELEASES = [
     ]
   },
 
-  // ─── NOTABLE SINGLES / B-SIDES ───
-  {
-    id: 'ok_nodisco',
-    title: 'OK Computer OKNOTOK 1997–2017',
-    year: 2017,
-    type: 'album',
-    cover: 'https://coverartarchive.org/release-group/b6dbb956-5ce5-45fd-9588-cf14c20c85fb/front-250',
-    appleMusicUrl: 'https://music.apple.com/us/album/ok-computer-oknotok-1997-2017/1246095772',
-    songs: [
-      'Airbag', 'Paranoid Android', 'Subterranean Homesick Alien', 'Exit Music (For a Film)',
-      'Let Down', 'Karma Police', 'Fitter Happier', 'Electioneering',
-      'Climbing Up the Walls', 'No Surprises', 'Lucky', 'The Tourist',
-      'I Promise', 'Man of War', 'Lift'
-    ]
-  },
-  {
-    id: 'kid_a_mnesia',
-    title: 'KID A MNESIA',
-    year: 2021,
-    type: 'album',
-    cover: 'https://coverartarchive.org/release-group/6f25f9fb-e9e3-4c0d-8904-ecb8b46cd8aa/front-250',
-    appleMusicUrl: 'https://music.apple.com/us/album/kid-a-mnesia/1596588748',
-    songs: [
-      'Everything in Its Right Place', 'Kid A', 'The National Anthem',
-      'How to Disappear Completely', 'Treefingers', 'Optimistic', 'In Limbo',
-      'Idioteque', 'Morning Bell', 'Motion Picture Soundtrack',
-      'Packt Like Sardines in a Crushd Tin Box', 'Pyramid Song', 'Pulk/Pull Revolving Doors',
-      'You and Whose Army?', 'I Might Be Wrong', 'Knives Out', 'Morning Bell/Amnesiac',
-      'Dollars and Cents', 'Hunting Bears', 'Like Spinning Plates', 'Life in a Glasshouse',
-      'If You Say the Word', 'Follow Me Around', 'Pulk/Pull (Revolving Doors) [Demo]',
-      'Untitled V1', 'Fog', 'Pyramid Strings', 'Alt. Fast Track', 'Kinetic'
-    ]
-  },
 
-  // ─── SINGLES (selected notable releases) ───
+  // ─── SINGLES & EPs (combined) ───
   {
     id: 'high_dry_single',
     title: 'High and Dry / Planet Telex',
     year: 1995,
-    type: 'single',
+    type: 'ep',
     cover: 'https://coverartarchive.org/release-group/96838f33-94ec-3d55-9147-f158e2247bf3/front-250',
     appleMusicUrl: 'https://music.apple.com/us/search?term=High+and+Dry+Radiohead',
     songs: ['High and Dry', 'Planet Telex', 'Maquiladora', 'Lewis (Mistreated)']
@@ -1309,7 +1275,7 @@ const RELEASES = [
     id: 'fake_plastic_single',
     title: 'Fake Plastic Trees',
     year: 1995,
-    type: 'single',
+    type: 'ep',
     cover: 'https://coverartarchive.org/release-group/78690342-5a02-382c-9778-6b1c3dd741a2/front-250',
     appleMusicUrl: 'https://music.apple.com/us/search?term=Fake+Plastic+Trees+Radiohead',
     songs: ['Fake Plastic Trees', 'India Rubber', 'How Can You Be Sure?']
@@ -1318,7 +1284,7 @@ const RELEASES = [
     id: 'karma_single',
     title: 'Karma Police',
     year: 1997,
-    type: 'single',
+    type: 'ep',
     cover: 'https://coverartarchive.org/release-group/d8758f15-65c9-3f34-baf9-475b30755e2b/front-250',
     appleMusicUrl: 'https://music.apple.com/us/search?term=Karma+Police+Radiohead',
     songs: ['Karma Police', 'Meeting in the Aisle', 'Lull']
@@ -1327,7 +1293,7 @@ const RELEASES = [
     id: 'no_surprises_single',
     title: 'No Surprises',
     year: 1998,
-    type: 'single',
+    type: 'ep',
     cover: 'https://coverartarchive.org/release-group/d8758f15-65c9-3f34-baf9-475b30755e2b/front-250',
     appleMusicUrl: 'https://music.apple.com/us/search?term=No+Surprises+Radiohead',
     songs: ['No Surprises', 'Palo Alto', 'How I Made My Millions']
@@ -1336,7 +1302,7 @@ const RELEASES = [
     id: 'burn_witch_single',
     title: 'Burn the Witch',
     year: 2016,
-    type: 'single',
+    type: 'ep',
     cover: 'https://coverartarchive.org/release-group/bbce0087-d386-4246-a51d-dbcdfdbe8fb2/front-250',
     appleMusicUrl: 'https://music.apple.com/us/search?term=Burn+the+Witch+Radiohead',
     songs: ['Burn the Witch', 'Ful Stop']
@@ -1345,7 +1311,7 @@ const RELEASES = [
     id: 'daydreaming_single',
     title: 'Daydreaming',
     year: 2016,
-    type: 'single',
+    type: 'ep',
     cover: 'https://coverartarchive.org/release-group/bbce0087-d386-4246-a51d-dbcdfdbe8fb2/front-250',
     appleMusicUrl: 'https://music.apple.com/us/search?term=Daydreaming+Radiohead',
     songs: ['Daydreaming']
