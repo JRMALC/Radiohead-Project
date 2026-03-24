@@ -2406,6 +2406,35 @@ function renderGroupStats(container) {
 
     ${sectionBand('Agreement & disagreement', 'group')}
 
+    <!-- Unanimous perfect 10s -->
+    ${(()=>{
+      const unanimousTens = [];
+      RELEASES.forEach(rel => {
+        rel.songs.forEach((song, i) => {
+          const ratings = allMembers.map(u => u.ratings[ratingKey(rel.id, i)] || 0);
+          const allRated = ratings.every(r => r > 0);
+          const allTen   = ratings.every(r => r === 10);
+          if (allRated && allTen) {
+            unanimousTens.push({ rel, song, members: allMembers.map(u=>u.name) });
+          }
+        });
+      });
+      if (!unanimousTens.length) return '';
+      return gCard(`
+        ${h3('Unanimous perfect 10s')}
+        <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Songs every single member has rated a 10 — the untouchables.</div>
+        ${unanimousTens.map((x,i)=>`
+          <div class="rank-row">
+            <div class="rank-num" style="color:${ratingColor(10)}">${i+1}</div>
+            <div>
+              <div class="rank-name">${x.song}</div>
+              <div class="rank-sub">${x.rel.title} · ${x.members.length} members · All rated 10</div>
+            </div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:${ratingColor(10)}">10</div>
+          </div>`).join('')}
+      `);
+    })()}
+
     <!-- Most agreed albums -->
     ${agreedAlbums.length?gCard(`
       ${h3('Most agreed-on albums')}
@@ -2462,7 +2491,6 @@ function renderGroupStats(container) {
         </div>`).join('')}
     `):''}
 
-    <!-- Head-to-head pairs -->
     ${pairs.length?gCard(`
       ${h3('Most in sync')}
       <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-dim);margin-bottom:1rem">Member pairs ranked by avg album rating gap (lower = more in sync)</div>
