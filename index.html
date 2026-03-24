@@ -2319,6 +2319,25 @@ function renderGroupStats(container) {
 
     ${sectionBand('Members', 'group')}
 
+    <!-- Group overview tiles -->
+    ${(()=>{
+      const allRatings = groupAllRatings.map(x=>x.rating);
+      const groupAvg = allRatings.length ? allRatings.reduce((a,b)=>a+b,0)/allRatings.length : null;
+      const sorted = [...allRatings].sort((a,b)=>a-b);
+      const groupMedian = sorted.length ? (sorted.length%2===0 ? (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2 : sorted[Math.floor(sorted.length/2)]) : null;
+      const tens = allRatings.filter(r=>r===10).length;
+      const totalRated = allRatings.length;
+      return `<div class="stat-grid" style="margin-bottom:1rem">
+        ${[
+          {val: groupAvg!==null?groupAvg.toFixed(2):'—', label:'Group avg'},
+          {val: groupMedian!==null?groupMedian.toFixed(1):'—', label:'Group median'},
+          {val: totalRated, label:'Total ratings'},
+          {val: tens, label:'Perfect 10s'},
+          {val: allMembers.length, label:'Members'},
+        ].map(t=>`<div class="stat-tile"><div class="stat-val" style="color:${t.label==='Group avg'&&groupAvg?ratingColor(groupAvg):'var(--blue)'}">${t.val}</div><div class="stat-label">${t.label}</div></div>`).join('')}
+      </div>`;
+    })()}
+
     <!-- Member averages -->
     ${gCard(`
       ${h3('Member averages')}
@@ -2329,7 +2348,7 @@ function renderGroupStats(container) {
             <div class="rank-name">${m.user.name}${m.user.key===currentUser.key?' <span style="font-family:\'Syne Mono\',monospace;font-size:0.6rem;color:var(--accent)">you</span>':''}</div>
             <div class="rank-sub">${m.count} songs rated</div>
           </div>
-          <div class="rank-score" style="color:var(--blue)">${m.avg.toFixed(2)}</div>
+          <div class="rank-score" style="color:${ratingColor(m.avg)}">${m.avg.toFixed(2)}</div>
         </div>`).join('')}
     `)}
 
@@ -2947,68 +2966,90 @@ function buildCorrelationMatrix() {
 
   // Pearson correlation between two users' album averages
   function pearson(u1, u2) {
-    const shared = RELEASES.filter(rel => {
-      return userReleaseAvg(u1,rel) && userReleaseAvg(u2,rel);
-    });
-    if (shared.length < 3) return null;
+    const shared = RELEASES.filter(rel => userReleaseAvg(u1,rel) && userReleaseAvg(u2,rel));
+    if (shared.length < 2) return null;
     const v1 = shared.map(r => userReleaseAvg(u1,r).avg);
     const v2 = shared.map(r => userReleaseAvg(u2,r).avg);
     const m1 = v1.reduce((a,b)=>a+b)/v1.length;
     const m2 = v2.reduce((a,b)=>a+b)/v2.length;
     const num = v1.reduce((s,v,i)=>s+(v-m1)*(v2[i]-m2),0);
     const den = Math.sqrt(v1.reduce((s,v)=>s+(v-m1)**2,0) * v2.reduce((s,v)=>s+(v-m2)**2,0));
-    return den===0 ? null : num/den;
+    return den===0 ? null : Math.max(-1, Math.min(1, num/den));
   }
 
   const n = members.length;
-  const cellSz = Math.min(70, Math.floor(560/n));
-  const padL = 70, padT = 70;
-  const svgW = padL + n*cellSz + 10;
-  const svgH = padT + n*cellSz + 10;
+  const cellSz = 60;
+  const labelW = 80;   // row labels on left
+  const labelH = 80;   // col labels on top
+  const svgW = labelW + n * cellSz + 8;
+  const svgH = labelH + n * cellSz + 8;
 
   const corrColor = r => {
     if (r === null) return 'rgba(255,255,255,0.05)';
-    if (r >= 0.9) return '#1a6b3a';
-    if (r >= 0.7) return '#2a8a4e';
-    if (r >= 0.5) return '#3aaa66';
-    if (r >= 0.3) return '#6abf88';
-    if (r >= 0) return '#9ad4aa';
-    if (r >= -0.3) return '#d4a09a';
+    if (r >= 0.9)  return '#1a7a40';
+    if (r >= 0.7)  return '#2a9e55';
+    if (r >= 0.5)  return '#3ab868';
+    if (r >= 0.2)  return '#7dd4a0';
+    if (r >= -0.2) return 'rgba(255,255,255,0.12)';
+    if (r >= -0.5) return '#d4907a';
     return '#c0392b';
   };
 
   let cells = '', rowLabels = '', colLabels = '';
+
   for (let i = 0; i < n; i++) {
-    colLabels += `<text x="${padL + i*cellSz + cellSz/2}" y="${padT-8}" text-anchor="middle"
-      font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,0.5)"
-      transform="rotate(-35,${padL+i*cellSz+cellSz/2},${padT-8})">${members[i].name}</text>`;
-    rowLabels += `<text x="${padL-6}" y="${padT+i*cellSz+cellSz/2}" text-anchor="end" dominant-baseline="central"
-      font-family="'Syne Mono',monospace" font-size="9" fill="rgba(232,232,232,0.5)">${members[i].name}</text>`;
+    const name = members[i].name;
+    // Row label (left side)
+    rowLabels += `<text
+      x="${labelW - 8}"
+      y="${labelH + i*cellSz + cellSz/2}"
+      text-anchor="end" dominant-baseline="central"
+      font-family="'Syne Mono',monospace" font-size="10"
+      fill="rgba(232,232,232,0.6)">${name}</text>`;
+    // Col label (top, rotated)
+    colLabels += `<text
+      x="${labelW + i*cellSz + cellSz/2}"
+      y="${labelH - 10}"
+      text-anchor="start" dominant-baseline="central"
+      font-family="'Syne Mono',monospace" font-size="10"
+      fill="rgba(232,232,232,0.6)"
+      transform="rotate(-45 ${labelW + i*cellSz + cellSz/2} ${labelH - 10})">${name}</text>`;
+
     for (let j = 0; j < n; j++) {
       const r = i===j ? 1 : pearson(members[i], members[j]);
-      const col = i===j ? 'rgba(255,255,255,0.12)' : corrColor(r);
-      const label = r===null ? '?' : i===j ? '—' : r.toFixed(2);
-      const tooltip = i===j ? members[i].name : `${members[i].name} × ${members[j].name}: r=${r===null?'N/A':r.toFixed(3)}`;
-      cells += `<rect x="${padL+j*cellSz+1}" y="${padT+i*cellSz+1}" width="${cellSz-2}" height="${cellSz-2}" rx="1"
-        fill="${col}" onmouseenter="showTT(event,'${tooltip}')" onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default"/>
-        <text x="${padL+j*cellSz+cellSz/2}" y="${padT+i*cellSz+cellSz/2}" text-anchor="middle" dominant-baseline="central"
-          font-family="'Syne Mono',monospace" font-size="${cellSz>50?'9':'7'}" fill="rgba(255,255,255,0.7)">${label}</text>`;
+      const col = i===j ? 'rgba(255,255,255,0.10)' : corrColor(r);
+      const labelTxt = r===null ? '?' : i===j ? '—' : r.toFixed(2);
+      const tooltipTxt = i===j ? name : `${members[i].name} & ${members[j].name}: r = ${r===null?'N/A':r.toFixed(3)}`;
+      const cx = labelW + j*cellSz;
+      const cy = labelH + i*cellSz;
+      cells += `
+        <rect x="${cx+1}" y="${cy+1}" width="${cellSz-2}" height="${cellSz-2}" rx="2"
+          fill="${col}"
+          onmouseenter="showTT(event,'${tooltipTxt}')"
+          onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default"/>
+        <text x="${cx+cellSz/2}" y="${cy+cellSz/2}"
+          text-anchor="middle" dominant-baseline="central"
+          font-family="'Syne Mono',monospace" font-size="11"
+          fill="rgba(255,255,255,${r===null?'0.3':'0.85'})"
+          font-weight="${i===j?'400':'600'}">${labelTxt}</text>`;
     }
   }
 
   return gCard(`
     ${h3('Taste correlation matrix')}
-    <div class="viz-sub">Pearson correlation of album ratings between each pair of members. 1.0 = perfect agreement · 0 = no relationship · Negative = opposite tastes.</div>
-    <div style="overflow-x:auto">
-      <svg width="100%" viewBox="0 0 ${svgW} ${svgH}" style="min-width:${Math.min(svgW,300)}px">
-        ${colLabels}${rowLabels}${cells}
+    <div class="viz-sub">Pearson r between each pair of members' album ratings. +1.0 = identical taste · 0 = unrelated · −1 = opposite.</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <svg width="${svgW}" height="${svgH}"
+        viewBox="0 0 ${svgW} ${svgH}"
+        style="display:block;min-width:${svgW}px">
+        ${rowLabels}${colLabels}${cells}
       </svg>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0.75rem;align-items:center">
-      <span style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim)">Correlation:</span>
-      ${[['#1a6b3a','≥0.9'],['#2a8a4e','≥0.7'],['#3aaa66','≥0.5'],['#9ad4aa','≥0'],['#d4a09a','<0'],['#c0392b','<-0.3']].map(([c,l])=>
-        `<div style="display:flex;align-items:center;gap:3px;font-family:'Syne Mono',monospace;font-size:0.58rem;color:var(--text-dim)">
-          <div style="width:12px;height:12px;border-radius:1px;background:${c}"></div>${l}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem;align-items:center">
+      <span style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim);margin-right:2px">r value:</span>
+      ${[['#1a7a40','≥ 0.9'],['#2a9e55','≥ 0.7'],['#3ab868','≥ 0.5'],['#7dd4a0','≥ 0.2'],['rgba(255,255,255,0.12)','≈ 0'],['#d4907a','≤ −0.2'],['#c0392b','≤ −0.5']].map(([c,l])=>
+        `<div style="display:flex;align-items:center;gap:4px;font-family:'Syne Mono',monospace;font-size:0.58rem;color:var(--text-dim)">
+          <div style="width:12px;height:12px;border-radius:2px;background:${c};border:1px solid rgba(255,255,255,0.1)"></div>${l}
         </div>`).join('')}
     </div>
   `);
