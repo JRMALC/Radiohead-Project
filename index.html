@@ -2603,93 +2603,68 @@ function buildHeatMap(user, title, type) {
 }
 
 // ── 2. RADAR / SPIDER CHART (studio albums) ──
-function buildRadar(user, title, type, compareUser) {
+function buildRadar(primaryUser, title, type, compareUser) {
   const albums = RELEASES.filter(r => r.type === 'album');
   const N = albums.length;
-  const cx = 200, cy = 200, R = 150;
-  const avgs = albums.map(a => {
-    const res = userReleaseAvg(user, a);
-    return res ? res.avg : null;
-  });
-  const hasData = avgs.some(v => v !== null);
-  if (!hasData) return '';
-
+  const cx = 210, cy = 210, R = 155;
   const angleStep = (2 * Math.PI) / N;
   const scale = v => v === null ? 0 : (v / 10) * R;
+  const allMembers = Object.values(allUsers).filter(isValidUser);
+  if (!allMembers.length) return '';
 
-  // Grid rings
+  const memberColors = ['#c0392b','#7eb8ff','#f39c12','#2ecc71','#9b59b6','#1abc9c','#e67e22','#3498db'];
+
   const rings = [2,4,6,8,10].map(v => {
-    const pts = albums.map((_, i) => {
-      const a = i * angleStep - Math.PI/2;
-      const r = (v/10)*R;
-      return `${cx + r*Math.cos(a)},${cy + r*Math.sin(a)}`;
-    }).join(' ');
+    const pts = albums.map((_,i) => { const a=i*angleStep-Math.PI/2,r=(v/10)*R; return `${(cx+r*Math.cos(a)).toFixed(1)},${(cy+r*Math.sin(a)).toFixed(1)}`; }).join(' ');
     return `<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-      <text x="${cx + (v/10)*R*Math.cos(-Math.PI/2) + 4}" y="${cy + (v/10)*R*Math.sin(-Math.PI/2)}" 
-        font-family="'Syne Mono',monospace" font-size="8" fill="rgba(255,255,255,0.25)">${v}</text>`;
+      <text x="${(cx+(v/10)*R*Math.cos(-Math.PI/2)+4).toFixed(1)}" y="${(cy+(v/10)*R*Math.sin(-Math.PI/2)).toFixed(1)}" font-family="'Syne Mono',monospace" font-size="8" fill="rgba(255,255,255,0.2)">${v}</text>`;
   });
 
-  // Spokes
-  const spokes = albums.map((a, i) => {
-    const ang = i * angleStep - Math.PI/2;
-    const x2 = cx + R*Math.cos(ang), y2 = cy + R*Math.sin(ang);
-    // Label placement
-    const lx = cx + (R+22)*Math.cos(ang), ly = cy + (R+22)*Math.sin(ang);
-    const anchor = lx < cx-5 ? 'end' : lx > cx+5 ? 'start' : 'middle';
-    const shortName = a.title.replace('OK Computer','OKC').replace('A Moon Shaped Pool','AMSP')
+  const spokes = albums.map((a,i) => {
+    const ang=i*angleStep-Math.PI/2;
+    const x2=(cx+R*Math.cos(ang)).toFixed(1), y2=(cy+R*Math.sin(ang)).toFixed(1);
+    const lx=cx+(R+26)*Math.cos(ang), ly=cy+(R+26)*Math.sin(ang);
+    const anchor = lx<cx-10?'end':lx>cx+10?'start':'middle';
+    const sn = a.title.replace('OK Computer','OKC').replace('A Moon Shaped Pool','AMSP')
       .replace('Hail to the Thief','HTTT').replace('In Rainbows','IR')
-      .replace('The King of Limbs','KOL').replace('Pablo Honey','Pablo H.')
-      .replace('KID A MNESIA','KAM').replace('OK Computer OKNOTOK 1997–2017','OKNOTOK');
-    return `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-      <text x="${lx}" y="${ly}" text-anchor="${anchor}" dominant-baseline="central"
-        font-family="'Syne Mono',monospace" font-size="7.5" fill="rgba(232,232,232,0.5)">${shortName}</text>`;
+      .replace('The King of Limbs','KOL').replace('Pablo Honey','Pablo H.');
+    return `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="central" font-family="'Syne Mono',monospace" font-size="7.5" fill="rgba(232,232,232,0.45)">${sn}</text>`;
   });
 
-  // User polygon
-  const userPts = albums.map((a, i) => {
-    const ang = i * angleStep - Math.PI/2;
-    const v = scale(avgs[i]);
-    return `${cx + v*Math.cos(ang)},${cy + v*Math.sin(ang)}`;
-  }).join(' ');
+  const polygons = allMembers.map((u, mi) => {
+    const avgs = albums.map(a => { const r=userReleaseAvg(u,a); return r?r.avg:null; });
+    if (!avgs.some(v=>v!==null)) return '';
+    const col = memberColors[mi % memberColors.length];
+    const isPrimary = u.key === primaryUser.key;
+    const pts = albums.map((_,i) => { const ang=i*angleStep-Math.PI/2,v=scale(avgs[i]); return `${(cx+v*Math.cos(ang)).toFixed(1)},${(cy+v*Math.sin(ang)).toFixed(1)}`; }).join(' ');
+    return `<polygon points="${pts}" fill="${col}${isPrimary?'28':'12'}" stroke="${col}" stroke-width="${isPrimary?'2.5':'1.5'}" opacity="${isPrimary?'1':'0.7'}" ${isPrimary?'':'stroke-dasharray="5 3"'}/>`;
+  });
 
-  const accentCol = type === 'personal' ? '#c0392b' : '#7eb8ff';
-
-  // Optional compare polygon
-  let comparePoly = '';
-  if (compareUser) {
-    const cAvgs = albums.map(a => { const r = userReleaseAvg(compareUser, a); return r ? r.avg : null; });
-    const cPts = albums.map((a,i) => {
-      const ang = i*angleStep - Math.PI/2;
-      const v = scale(cAvgs[i]);
-      return `${cx+v*Math.cos(ang)},${cy+v*Math.sin(ang)}`;
-    }).join(' ');
-    comparePoly = `<polygon points="${cPts}" fill="rgba(126,184,255,0.08)" stroke="#7eb8ff" stroke-width="1.5" stroke-dasharray="4 3"/>`;
-  }
-
-  // Dots with tooltips
+  const pidx = allMembers.findIndex(u=>u.key===primaryUser.key);
+  const pcol = memberColors[pidx>=0?pidx%memberColors.length:0];
+  const pAvgs = albums.map(a => { const r=userReleaseAvg(primaryUser,a); return r?r.avg:null; });
   const dots = albums.map((a,i) => {
-    const ang = i*angleStep - Math.PI/2;
-    const v = scale(avgs[i]);
-    if (!avgs[i]) return '';
-    return `<circle cx="${(cx+v*Math.cos(ang)).toFixed(1)}" cy="${(cy+v*Math.sin(ang)).toFixed(1)}" r="3.5"
-      fill="${accentCol}" stroke="var(--dark)" stroke-width="1.5"
-      onmouseenter="showTT(event,'${a.title}<br>${avgs[i].toFixed(2)}/10')"
-      onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default"/>`;
+    if (!pAvgs[i]) return '';
+    const ang=i*angleStep-Math.PI/2, v=scale(pAvgs[i]);
+    const tip = `${a.title}: ${pAvgs[i].toFixed(2)}/10`;
+    return `<circle cx="${(cx+v*Math.cos(ang)).toFixed(1)}" cy="${(cy+v*Math.sin(ang)).toFixed(1)}" r="3.5" fill="${pcol}" stroke="var(--dark)" stroke-width="1.5" onmouseenter="showTT(event,${JSON.stringify(tip)})" onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default"/>`;
   });
 
-  const svgW = 400, svgH = 400;
+  const legend = allMembers.map((u,mi) => {
+    const col=memberColors[mi%memberColors.length], ip=u.key===primaryUser.key;
+    return `<div style="display:flex;align-items:center;gap:5px;font-family:'Syne Mono',monospace;font-size:0.62rem;color:rgba(232,232,232,${ip?'0.9':'0.55'})"><div style="width:22px;height:2.5px;background:${col};border-radius:1px"></div>${u.name}${ip?' (you)':''}</div>`;
+  }).join('');
+
   return `<div class="viz-card ${type}-card">
-    <h3><span class="h3-dot"></span>Album radar</h3>
-    <div class="viz-sub">Your rating for each studio album on a radial axis. Larger polygon = higher overall ratings.${compareUser?` Dashed = ${compareUser.name}.`:''}</div>
+    <h3><span class="h3-dot"></span>Album radar${allMembers.length>1?' — all members':''}</h3>
+    <div class="viz-sub">Each axis = one studio album. Solid = you · Dashed = other members. Hover dots for scores.</div>
     <div class="radar-wrap">
-      <svg width="100%" viewBox="0 0 ${svgW} ${svgH}" style="max-width:400px">
-        ${rings.join('')}
-        ${spokes.join('')}
-        <polygon points="${userPts}" fill="${accentCol}22" stroke="${accentCol}" stroke-width="2"/>
-        ${comparePoly}
-        ${dots.join('')}
+      <svg width="100%" viewBox="0 0 420 420" style="max-width:420px">
+        ${rings.join('')}${spokes.join('')}${polygons.join('')}${dots.join('')}
       </svg>
     </div>
+    ${allMembers.length>1?`<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.75rem">${legend}</div>`:''}
   </div>`;
 }
 
@@ -2974,24 +2949,25 @@ function buildCorrelationMatrix() {
     const m2 = v2.reduce((a,b)=>a+b)/v2.length;
     const num = v1.reduce((s,v,i)=>s+(v-m1)*(v2[i]-m2),0);
     const den = Math.sqrt(v1.reduce((s,v)=>s+(v-m1)**2,0) * v2.reduce((s,v)=>s+(v-m2)**2,0));
-    return den===0 ? null : Math.max(-1, Math.min(1, num/den));
+    if (den === 0) return 1.0; // identical scores = perfect correlation
+    return Math.max(-1, Math.min(1, num/den));
   }
 
   const n = members.length;
-  const cellSz = 60;
-  const labelW = 80;   // row labels on left
-  const labelH = 80;   // col labels on top
-  const svgW = labelW + n * cellSz + 8;
-  const svgH = labelH + n * cellSz + 8;
+  const cellSz = 70;
+  const padL = 90;
+  const padT = 90;
+  const svgW = padL + n * cellSz;
+  const svgH = padT + n * cellSz + 4;
 
   const corrColor = r => {
-    if (r === null) return 'rgba(255,255,255,0.05)';
-    if (r >= 0.9)  return '#1a7a40';
-    if (r >= 0.7)  return '#2a9e55';
-    if (r >= 0.5)  return '#3ab868';
-    if (r >= 0.2)  return '#7dd4a0';
-    if (r >= -0.2) return 'rgba(255,255,255,0.12)';
-    if (r >= -0.5) return '#d4907a';
+    if (r === null) return 'rgba(255,255,255,0.07)';
+    if (r >= 0.85) return '#1a7a40';
+    if (r >= 0.65) return '#2a9e55';
+    if (r >= 0.4)  return '#3ab868';
+    if (r >= 0.15) return '#7dd4a0';
+    if (r >= -0.15) return 'rgba(255,255,255,0.14)';
+    if (r >= -0.4) return '#d4907a';
     return '#c0392b';
   };
 
@@ -2999,57 +2975,49 @@ function buildCorrelationMatrix() {
 
   for (let i = 0; i < n; i++) {
     const name = members[i].name;
-    // Row label (left side)
-    rowLabels += `<text
-      x="${labelW - 8}"
-      y="${labelH + i*cellSz + cellSz/2}"
+    rowLabels += `<text x="${padL - 10}" y="${padT + i*cellSz + cellSz/2}"
       text-anchor="end" dominant-baseline="central"
-      font-family="'Syne Mono',monospace" font-size="10"
-      fill="rgba(232,232,232,0.6)">${name}</text>`;
-    // Col label (top, rotated)
-    colLabels += `<text
-      x="${labelW + i*cellSz + cellSz/2}"
-      y="${labelH - 10}"
-      text-anchor="start" dominant-baseline="central"
-      font-family="'Syne Mono',monospace" font-size="10"
-      fill="rgba(232,232,232,0.6)"
-      transform="rotate(-45 ${labelW + i*cellSz + cellSz/2} ${labelH - 10})">${name}</text>`;
+      font-family="'Syne Mono',monospace" font-size="11"
+      fill="rgba(232,232,232,0.7)">${name}</text>`;
+    colLabels += `<text x="${padL + i*cellSz + cellSz/2}" y="${padT - 12}"
+      text-anchor="start"
+      font-family="'Syne Mono',monospace" font-size="11"
+      fill="rgba(232,232,232,0.7)"
+      transform="rotate(-40 ${padL + i*cellSz + cellSz/2} ${padT - 12})">${name}</text>`;
 
     for (let j = 0; j < n; j++) {
-      const r = i===j ? 1 : pearson(members[i], members[j]);
-      const col = i===j ? 'rgba(255,255,255,0.10)' : corrColor(r);
-      const labelTxt = r===null ? '?' : i===j ? '—' : r.toFixed(2);
-      const tooltipTxt = i===j ? name : `${members[i].name} & ${members[j].name}: r = ${r===null?'N/A':r.toFixed(3)}`;
-      const cx = labelW + j*cellSz;
-      const cy = labelH + i*cellSz;
-      cells += `
-        <rect x="${cx+1}" y="${cy+1}" width="${cellSz-2}" height="${cellSz-2}" rx="2"
-          fill="${col}"
-          onmouseenter="showTT(event,'${tooltipTxt}')"
-          onmousemove="moveTT(event)" onmouseleave="hideTT()" style="cursor:default"/>
+      const isDiag = i === j;
+      const r = isDiag ? 1 : pearson(members[i], members[j]);
+      const bg = isDiag ? 'rgba(255,255,255,0.08)' : corrColor(r);
+      const txt = isDiag ? name[0] : (r === null ? 'N/A' : r.toFixed(2));
+      const nShared = isDiag ? 0 : RELEASES.filter(rel => userReleaseAvg(members[i],rel) && userReleaseAvg(members[j],rel)).length;
+      const tip = isDiag ? name : (members[i].name + ' + ' + members[j].name + ': r=' + (r===null?'N/A':r.toFixed(3)) + ' (' + nShared + ' albums)');
+      const cx = padL + j*cellSz, cy = padT + i*cellSz;
+      cells += `<rect x="${cx+1}" y="${cy+1}" width="${cellSz-2}" height="${cellSz-2}" rx="3"
+        fill="${bg}" style="cursor:default"
+        onmouseenter="showTT(event,${JSON.stringify(tip)})"
+        onmousemove="moveTT(event)" onmouseleave="hideTT()"/>
         <text x="${cx+cellSz/2}" y="${cy+cellSz/2}"
           text-anchor="middle" dominant-baseline="central"
-          font-family="'Syne Mono',monospace" font-size="11"
-          fill="rgba(255,255,255,${r===null?'0.3':'0.85'})"
-          font-weight="${i===j?'400':'600'}">${labelTxt}</text>`;
+          font-family="'Syne Mono',monospace" font-size="12" font-weight="600"
+          fill="rgba(255,255,255,${r===null?'0.3':'0.92'})">${txt}</text>`;
     }
   }
 
   return gCard(`
     ${h3('Taste correlation matrix')}
-    <div class="viz-sub">Pearson r between each pair of members' album ratings. +1.0 = identical taste · 0 = unrelated · −1 = opposite.</div>
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-      <svg width="${svgW}" height="${svgH}"
-        viewBox="0 0 ${svgW} ${svgH}"
-        style="display:block;min-width:${svgW}px">
+    <div class="viz-sub">Pearson r between each pair of members' album ratings. +1.0 = identical taste · 0 = unrelated · −1 = opposite. Needs ≥2 shared albums.</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px">
+      <svg width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}"
+        style="display:block;min-width:${svgW}px;overflow:visible">
         ${rowLabels}${colLabels}${cells}
       </svg>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem;align-items:center">
-      <span style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim);margin-right:2px">r value:</span>
-      ${[['#1a7a40','≥ 0.9'],['#2a9e55','≥ 0.7'],['#3ab868','≥ 0.5'],['#7dd4a0','≥ 0.2'],['rgba(255,255,255,0.12)','≈ 0'],['#d4907a','≤ −0.2'],['#c0392b','≤ −0.5']].map(([c,l])=>
-        `<div style="display:flex;align-items:center;gap:4px;font-family:'Syne Mono',monospace;font-size:0.58rem;color:var(--text-dim)">
-          <div style="width:12px;height:12px;border-radius:2px;background:${c};border:1px solid rgba(255,255,255,0.1)"></div>${l}
+      <span style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim);margin-right:2px">r:</span>
+      ${[['#1a7a40','≥0.85'],['#2a9e55','≥0.65'],['#3ab868','≥0.40'],['#7dd4a0','≥0.15'],['rgba(255,255,255,0.14)','≈0'],['#d4907a','≤−0.15'],['#c0392b','≤−0.40']].map(([c,l])=>
+        `<div style="display:flex;align-items:center;gap:4px;font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-dim)">
+          <div style="width:13px;height:13px;border-radius:2px;background:${c};border:1px solid rgba(255,255,255,0.08)"></div>${l}
         </div>`).join('')}
     </div>
   `);
