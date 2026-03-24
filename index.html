@@ -1980,7 +1980,13 @@ function renderUserStats(container, user, isMe) {
   const sortedSongs = [...allRatings].sort((a,b)=>b.rating-a.rating);
   const topSongs    = sortedSongs.slice(0,10);
   const bottomSongs = [...sortedSongs].reverse().slice(0,10);
-  const tens        = allRatings.filter(x=>x.rating===10);
+  // Perfect 10s: studio albums only, deduplicated by song name
+  const tens = (() => {
+    const seen = new Set();
+    return allRatings
+      .filter(x => x.rating === 10 && x.release.type === 'album')
+      .filter(x => { if (seen.has(x.song)) return false; seen.add(x.song); return true; });
+  })();
   const loved       = allRatings.filter(x=>x.rating>=8).length;
   const liked       = allRatings.filter(x=>x.rating>=6&&x.rating<=7).length;
   const meh         = allRatings.filter(x=>x.rating>=4&&x.rating<=5).length;
@@ -2018,8 +2024,7 @@ function renderUserStats(container, user, isMe) {
         { val: overallAvg!==null?overallAvg.toFixed(1):'—', label: 'Avg rating' },
         { val: median!==null?median.toFixed(1):'—', label: 'Median' },
         { val: pct+'%', label: 'Complete' },
-        { val: tens.length, label: 'Perfect 10s' },
-        { val: perRelease.length, label: 'Albums started' },
+        { val: tens.length, label: 'Perfect 10s' },        { val: perRelease.length, label: 'Albums started' },
       ].map(t=>`<div class="stat-tile"><div class="stat-val">${t.val}</div><div class="stat-label">${t.label}</div></div>`).join('')}
     </div>
 
